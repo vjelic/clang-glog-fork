@@ -1,0 +1,642 @@
+{
+  "version": "2.1.0",
+  "runs": [
+    {
+      "tool": {
+        "driver": {
+          "name": "Glog.AI",
+          "organization": "Glog.AI",
+          "fullName": "Glog, Making software more secure",
+          "version": "1.0.0",
+          "semanticVersion": "1.0.0",
+          "informationUri": "https://www.glog.ai",
+          "rules": [
+            {
+              "id": "glog-92d76e3d-9964-4358-a860-3c34fe0ed6a5",
+              "help": {
+                "text": "",
+                "markdown": "## Description\n\nThe `strlen()` function in C++ is used to find the length of a string. However, it can lead to vulnerabilities if not used properly. The function counts the number of characters in a string until it reaches a null character (`'\\0'`). If the string is not null-terminated, `strlen()` will continue reading memory until it encounters a null character, which can lead to buffer overflows, memory corruption, and other unexpected behavior.\n\n## Mitigation Advice\n\nTo mitigate this vulnerability, always ensure that your strings are null-terminated. Avoid using `strlen()` on strings that may not be null-terminated. Instead, consider using safer alternatives that take the size of the buffer as an argument, such as `strnlen()`, which will not read past the specified length.\n\n## Source Code Fix Recommendation\n\nInstead of:\n\n```cpp\n#include <cstring>\n\nchar Source[] = \"This is a string\";\nint length = strlen(Source);\n```\n\nUse:\n\n```cpp\n#include <cstring>\n\nchar Source[] = \"This is a string\";\nint length = strnlen(Source, sizeof(Source));\n```\n\n## Library Dependencies\n\nThe `strlen()` and `strnlen()` functions are part of the `<cstring>` library in C++.\n\n## References\n\n- [OWASP C++ Secure Coding Practices](https://cheatsheetseries.owasp.org/cheatsheets/C-Based_Toolchain_Hardening_Cheat_Sheet.html)\n- [CWE-126: Buffer Over-read](https://cwe.mitre.org/data/definitions/126.html)"
+              },
+              "properties": {
+                "tags": [
+                  "DS140021"
+                ]
+              }
+            },
+            {
+              "id": "glog-5c9932e9-dc10-458b-af2c-e58a7bd80d84",
+              "help": {
+                "text": "",
+                "markdown": "## Description\n\nThe `memcpy` function in C++ is used to copy a block of memory from one location to another. This function does not check for any buffer overflows, which can lead to vulnerabilities if the destination buffer is smaller than the source buffer. This can lead to overwriting of adjacent memory and can potentially lead to execution of arbitrary code, denial of service, or information disclosure.\n\n## Mitigation Advice\n\nTo mitigate this vulnerability, it is recommended to always ensure that the destination buffer is large enough to hold the data being copied from the source buffer. This can be done by checking the size of the destination buffer before calling the `memcpy` function. Additionally, consider using safer functions that include bounds checking, such as `strncpy` or `memcpy_s` (in C11), if available.\n\n## Source Code Fix Recommendation\n\nHere is a recommended fix for the provided code:\n\n```cpp\nif (protocols.size() <= getProtocolStorageSize()) {\n    memcpy(getProtocolStorage(), protocols.data(), protocols.size());\n} else {\n    // Handle error: destination buffer is too small\n}\n```\n\nIn this code, `getProtocolStorageSize()` is a hypothetical function that returns the size of the buffer returned by `getProtocolStorage()`. You would need to replace this with the actual way of getting the size of your buffer.\n\n## Library Dependencies\n\nThe `memcpy` function is part of the C standard library, so no additional libraries are needed for this code to execute properly.\n\n## References\n\n- [OWASP C++ Secure Coding Practices](https://cheatsheetseries.owasp.org/cheatsheets/C-Based_Toolchain_Hardening_Cheat_Sheet.html)\n- [CWE-120: Buffer Copy without Checking Size of Input ('Classic Buffer Overflow')](https://cwe.mitre.org/data/definitions/120.html)\n\nPlease note that the links provided are active and accessible to anonymous users at the time of writing."
+              },
+              "properties": {
+                "tags": [
+                  "DS121708"
+                ]
+              }
+            },
+            {
+              "id": "glog-2db537cd-366f-4b6f-a819-54ed97621068",
+              "help": {
+                "text": "",
+                "markdown": "## Description\n\nThe `memcpy` function in C++ is used to copy a block of memory from one location to another. This function is vulnerable to buffer overflow attacks if the size of the data being copied is larger than the size of the destination buffer. In the provided code snippet, if `CurSize * sizeof(T)` is larger than the size of `NewElts`, it can lead to a buffer overflow.\n\n## Mitigation Advice\n\nTo mitigate this vulnerability, you should always ensure that the destination buffer is large enough to hold the data being copied. This can be done by checking the size of the destination buffer before calling `memcpy`. Additionally, consider using safer functions that include buffer size checks, such as `strncpy` or `memcpy_s` (in C11).\n\n## Source Code Fix Recommendation\n\nHere is a safer version of the code snippet using `memcpy_s`:\n\n```cpp\nsize_t size = CurSize * sizeof(T);\nif (size <= sizeof(NewElts)) {\n    memcpy_s(NewElts, size, Begin, size);\n} else {\n    // Handle error: size is larger than the buffer\n}\n```\n\n## Library Dependencies\n\nThe `memcpy` function is part of the C Standard Library, so you need to include the `cstring` header:\n\n```cpp\n#include <cstring>\n```\n\nFor `memcpy_s`, it's part of the C11 standard, so you need to include the `cstddef` header:\n\n```cpp\n#include <cstddef>\n```\n\n## References\n\n- [OWASP C++ Secure Coding Practices](https://cheatsheetseries.owasp.org/cheatsheets/C-Based_Toolchain_Hardening_Cheat_Sheet.html)\n- [CWE-120: Buffer Copy without Checking Size of Input ('Classic Buffer Overflow')](https://cwe.mitre.org/data/definitions/120.html)\n\nPlease note that the links provided are accessible to anonymous users at the time of writing this report."
+              },
+              "properties": {
+                "tags": [
+                  "DS121708"
+                ]
+              }
+            },
+            {
+              "id": "glog-49d5f0b7-a067-420d-9b27-23b24ae34c44",
+              "help": {
+                "text": "",
+                "markdown": "## Description\n\n\"Avoid Storing Tokens or Keys in Source Code Vulnerability\" is a common security vulnerability in C++ programming language where sensitive data such as API keys, tokens, or passwords are hard-coded directly into the source code. This is a bad practice as it exposes these sensitive data to potential attackers who gain access to the source code. This vulnerability can lead to unauthorized access to systems or services, data breaches, and other security incidents.\n\n## Mitigation Advice\n\nTo mitigate this vulnerability, avoid hard-coding sensitive data directly into your source code. Instead, use secure methods to store and retrieve these data, such as environment variables, secure configuration files, or secure key vaults. \n\nEnsure that these data are encrypted at rest and in transit, and that they are only accessible to authorized entities. Implement proper access controls and regularly audit access logs to detect any unauthorized access attempts.\n\n## Source Code Fix Recommendation\n\nThe specific vulnerability sink \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\" appears to be a placeholder for a token or key. To fix this, replace the hard-coded token or key with a secure method to retrieve it. For example, you can use an environment variable:\n\n```cpp\n#include <cstdlib> // Required for getenv\n\nconst char* token = std::getenv(\"TOKEN\");\nif (!token) {\n    // Handle error\n}\n```\n\nIn this example, the token is stored in an environment variable named \"TOKEN\". The `std::getenv` function retrieves the value of the environment variable.\n\n## Library Dependencies\n\nThe above code example requires the `<cstdlib>` library to use the `std::getenv` function.\n\n## References\n\n- [CWE-798: Use of Hard-coded Credentials](https://cwe.mitre.org/data/definitions/798.html)"
+              },
+              "properties": {
+                "tags": [
+                  "DS173237"
+                ]
+              }
+            },
+            {
+              "id": "glog-f3a992cc-e2c8-4220-95a7-cd8265e43b2f",
+              "help": {
+                "text": "",
+                "markdown": "## Description\n\nThe `strlen()` function in C++ is used to find the length of a string. However, it can lead to vulnerabilities if not used properly. The function counts the number of characters in a string until it reaches a null character (`'\\0'`). If the string is not null-terminated, `strlen()` will continue reading memory until it encounters a null character, which can lead to buffer overflows, memory corruption, and other unexpected behavior.\n\n## Mitigation Advice\n\nTo mitigate this vulnerability, always ensure that your strings are null-terminated. Avoid using `strlen()` on strings that may not be null-terminated. Instead, consider using safer alternatives that take the size of the buffer as an argument, such as `strnlen()`, which will not read past the specified length.\n\n## Source Code Fix Recommendation\n\nInstead of:\n\n```cpp\n#include <cstring>\n\nchar Source[] = \"This is a string\";\nint length = strlen(Source);\n```\n\nUse:\n\n```cpp\n#include <cstring>\n\nchar Source[] = \"This is a string\";\nint length = strnlen(Source, sizeof(Source));\n```\n\n## Library Dependencies\n\nThe `strlen()` and `strnlen()` functions are part of the `<cstring>` library in C++.\n\n## References\n\n- [OWASP C++ Secure Coding Practices](https://cheatsheetseries.owasp.org/cheatsheets/C-Based_Toolchain_Hardening_Cheat_Sheet.html)\n- [CWE-126: Buffer Over-read](https://cwe.mitre.org/data/definitions/126.html)"
+              },
+              "properties": {
+                "tags": [
+                  "DS140021"
+                ]
+              }
+            },
+            {
+              "id": "glog-7d2781c0-12a6-4f07-a84c-3541eb06ef9c",
+              "help": {
+                "text": "",
+                "markdown": "## Description\n\nThe `strlen` function in C++ is used to find the length of a string. However, it can lead to vulnerabilities if not used properly. The function counts the number of characters in a string up to but not including the first null character. If the string does not end with a null character, `strlen` will continue reading memory until it encounters a null character, potentially leading to buffer overflows, memory corruption, and other undefined behavior.\n\nIn the provided code snippet, `strlen(\"nearlyLooks  +   like +   ts + code;  \")`, there is no direct vulnerability as the string is a constant and properly null-terminated. However, if the string was replaced with a variable that could be manipulated by an attacker, it could lead to the aforementioned issues.\n\n## Mitigation Advice\n\nTo mitigate this vulnerability, always ensure that strings are null-terminated before passing them to `strlen`. If the length of the string is known at compile time, consider using that value directly instead of calling `strlen`.\n\n## Source Code Fix Recommendation\n\nIf the string is not a constant and its length is not known at compile time, consider using `strnlen` instead of `strlen`. `strnlen` takes an additional parameter that specifies the maximum number of characters to read. This can prevent buffer overflows if the string is not null-terminated.\n\n```cpp\n#include <string.h>\n\nconst char* str = \"nearlyLooks  +   like +   ts + code;  \";\nsize_t len = strnlen(str, 100);  // Replace 100 with the actual maximum length of the string\n```\n\n## Library Dependencies\n\nThe `strlen` function is part of the C standard library, so no additional libraries are needed to use it.\n\n## References\n\n- [OWASP C++ Secure Coding Practices](https://cheatsheetseries.owasp.org/cheatsheets/C-Based_Toolchain_Hardening_Cheat_Sheet.html)\n- [CWE-126: Buffer Over-read](https://cwe.mitre.org/data/definitions/126.html)\n\nPlease note that the links provided are accessible to anonymous users at the time of writing this report."
+              },
+              "properties": {
+                "tags": [
+                  "DS140021"
+                ]
+              }
+            },
+            {
+              "id": "glog-36e629c2-0b83-4a20-b2ad-6271e3eb8488",
+              "help": {
+                "text": "",
+                "markdown": "## Description\n\n\"Avoid Storing Tokens or Keys in Source Code Vulnerability\" is a common security vulnerability in C++ programming language where sensitive data such as API keys, tokens, or passwords are hard-coded into the source code. This is a bad practice as it exposes these sensitive data to potential attackers who gain access to the source code. This vulnerability can lead to unauthorized access to systems or services, data breaches, and other security issues.\n\n## Mitigation Advice\n\nTo mitigate this vulnerability, avoid hard-coding sensitive data directly into your source code. Instead, use secure methods to store and retrieve these data, such as environment variables, secure server configurations, or encrypted databases. \n\n## Source Code Fix Recommendation\n\nThe specific vulnerability sink \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\" appears to be a placeholder for a sensitive data. To fix this, you could replace it with a secure method of storing and retrieving data. For example, you could use an environment variable:\n\n```cpp\n#include <cstdlib>\n\nconst char* token = std::getenv(\"TOKEN\");\n```\n\nIn this example, `TOKEN` is an environment variable that stores the sensitive data. This way, the sensitive data is not exposed in the source code.\n\n## Library Dependencies\n\nThe above code example requires the `cstdlib` library.\n\n## References\n\n- [CWE-798: Use of Hard-coded Credentials](https://cwe.mitre.org/data/definitions/798.html)"
+              },
+              "properties": {
+                "tags": [
+                  "DS173237"
+                ]
+              }
+            },
+            {
+              "id": "glog-1bb74172-0a5e-4872-bed8-771552dce9a7",
+              "help": {
+                "text": "",
+                "markdown": "## Description\n\n\"Avoid Storing Tokens or Keys in Source Code Vulnerability\" is a common security vulnerability in C++ programming language where sensitive data such as API keys, tokens, or passwords are hard-coded directly into the source code. This is a bad practice as it exposes these sensitive data to potential attackers who gain access to the source code. This vulnerability can lead to unauthorized access to systems or services, data breaches, and other security incidents.\n\n## Mitigation Advice\n\nTo mitigate this vulnerability, avoid hard-coding sensitive data directly into your source code. Instead, use secure methods to store and retrieve these data, such as environment variables, secure configuration files, or secure key vaults. \n\nEnsure that these data are encrypted at rest and in transit, and that they are only accessible to authorized entities. Implement proper access controls and regularly audit access logs to detect any unauthorized access attempts.\n\n## Source Code Fix Recommendation\n\nThe specific vulnerability sink \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\" appears to be a placeholder for a token or key. To fix this, replace the hard-coded token or key with a secure method to retrieve it. For example, you can use an environment variable:\n\n```cpp\n#include <cstdlib> // Required for getenv\n\nconst char* token = std::getenv(\"TOKEN\");\nif (!token) {\n    // Handle error\n}\n```\n\nIn this example, the token is stored in an environment variable named \"TOKEN\". The `std::getenv` function retrieves the value of the environment variable.\n\n## Library Dependencies\n\nThe above code example requires the `<cstdlib>` library to use the `std::getenv` function.\n\n## References\n\n- [CWE-798: Use of Hard-coded Credentials](https://cwe.mitre.org/data/definitions/798.html)"
+              },
+              "properties": {
+                "tags": [
+                  "DS173237"
+                ]
+              }
+            }
+          ],
+          "language": "en-US",
+          "contents": [
+            "localizedData",
+            "nonLocalizedData"
+          ],
+          "isComprehensive": false
+        }
+      },
+      "language": "en-US",
+      "results": [
+        {
+          "ruleId": "glog-92d76e3d-9964-4358-a860-3c34fe0ed6a5",
+          "kind": "fail",
+          "level": "note",
+          "message": {
+            "text": "Detected Vulnerability in C Function (strlen)"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "unittests/Basic/SourceManagerTest.cpp"
+                },
+                "region": {
+                  "startLine": 134,
+                  "startColumn": 54,
+                  "endLine": 134,
+                  "endColumn": 68,
+                  "charOffset": 4448,
+                  "charLength": 14,
+                  "snippet": {
+                    "text": "strlen(Source)",
+                    "rendered": {
+                      "text": "strlen(Source)",
+                      "markdown": "`strlen(Source)`"
+                    }
+                  },
+                  "sourceLanguage": "cpp"
+                }
+              }
+            }
+          ],
+          "fixes": [
+            {
+              "description": {
+                "text": "If a string is missing a null terminator, strlen will read past the end of the buffer"
+              },
+              "artifactChanges": [
+                {
+                  "artifactLocation": {
+                    "uri": "unittests/Basic/SourceManagerTest.cpp"
+                  },
+                  "replacements": [
+                    {
+                      "deletedRegion": {
+                        "charOffset": 4448,
+                        "charLength": 14
+                      },
+                      "insertedContent": {
+                        "text": "strlen_s(Source, <size of Source>)"
+                      }
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "description": {
+                "text": "If a string is missing a null terminator, strlen will read past the end of the buffer"
+              },
+              "artifactChanges": [
+                {
+                  "artifactLocation": {
+                    "uri": "unittests/Basic/SourceManagerTest.cpp"
+                  },
+                  "replacements": [
+                    {
+                      "deletedRegion": {
+                        "charOffset": 4448,
+                        "charLength": 14
+                      },
+                      "insertedContent": {
+                        "text": "strnlen(Source, <size of Source>)"
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "properties": {
+            "DevSkimSeverity": "BestPractice",
+            "DevSkimConfidence": "High",
+            "tags": [
+              "API.DangerousAPI.ProblematicFunction"
+            ]
+          }
+        },
+        {
+          "ruleId": "glog-5c9932e9-dc10-458b-af2c-e58a7bd80d84",
+          "kind": "fail",
+          "level": "note",
+          "message": {
+            "text": "Detected Vulnerability in C Function (memcpy)"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "include/clang/AST/Type.h"
+                },
+                "region": {
+                  "startLine": 5506,
+                  "startColumn": 6,
+                  "endLine": 5507,
+                  "endColumn": 29,
+                  "charOffset": 197041,
+                  "charLength": 76,
+                  "snippet": {
+                    "text": "memcpy(getProtocolStorage(), protocols.data(),\n             protocols.size()",
+                    "rendered": {
+                      "text": "memcpy(getProtocolStorage(), protocols.data(),\n             protocols.size()",
+                      "markdown": "`memcpy(getProtocolStorage(), protocols.data(),\n             protocols.size()`"
+                    }
+                  },
+                  "sourceLanguage": "c"
+                }
+              }
+            }
+          ],
+          "fixes": [
+            {
+              "description": {
+                "text": "There are a number of conditions in which memcpy can introduce a vulnerability (mismatched buffer sizes, null pointers, etc.). More secure alternitives perform additional validation of the source and destination buffer"
+              },
+              "artifactChanges": [
+                {
+                  "artifactLocation": {
+                    "uri": "include/clang/AST/Type.h"
+                  },
+                  "replacements": [
+                    {
+                      "deletedRegion": {
+                        "charOffset": 197041,
+                        "charLength": 76
+                      },
+                      "insertedContent": {
+                        "text": "memcpy_s(getProtocolStorage(), <size of getProtocolStorage()>,  protocols.data(), \n             protocols.size()"
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "properties": {
+            "DevSkimSeverity": "BestPractice",
+            "DevSkimConfidence": "High",
+            "tags": [
+              "API.DangerousAPI.ProblematicFunction"
+            ]
+          }
+        },
+        {
+          "ruleId": "glog-2db537cd-366f-4b6f-a819-54ed97621068",
+          "kind": "fail",
+          "level": "note",
+          "message": {
+            "text": "Detected Vulnerability in C Function (memcpy)"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "include/clang/AST/ASTVector.h"
+                },
+                "region": {
+                  "startLine": 398,
+                  "startColumn": 6,
+                  "endLine": 398,
+                  "endColumn": 48,
+                  "charOffset": 11792,
+                  "charLength": 42,
+                  "snippet": {
+                    "text": "memcpy(NewElts, Begin, CurSize * sizeof(T)",
+                    "rendered": {
+                      "text": "memcpy(NewElts, Begin, CurSize * sizeof(T)",
+                      "markdown": "`memcpy(NewElts, Begin, CurSize * sizeof(T)`"
+                    }
+                  },
+                  "sourceLanguage": "c"
+                }
+              }
+            }
+          ],
+          "fixes": [
+            {
+              "description": {
+                "text": "There are a number of conditions in which memcpy can introduce a vulnerability (mismatched buffer sizes, null pointers, etc.). More secure alternitives perform additional validation of the source and destination buffer"
+              },
+              "artifactChanges": [
+                {
+                  "artifactLocation": {
+                    "uri": "include/clang/AST/ASTVector.h"
+                  },
+                  "replacements": [
+                    {
+                      "deletedRegion": {
+                        "charOffset": 11792,
+                        "charLength": 42
+                      },
+                      "insertedContent": {
+                        "text": "memcpy_s(NewElts, <size of NewElts>,  Begin,  CurSize * sizeof(T)"
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "properties": {
+            "DevSkimSeverity": "BestPractice",
+            "DevSkimConfidence": "High",
+            "tags": [
+              "API.DangerousAPI.ProblematicFunction"
+            ]
+          }
+        },
+        {
+          "ruleId": "glog-49d5f0b7-a067-420d-9b27-23b24ae34c44",
+          "kind": "fail",
+          "level": "error",
+          "message": {
+            "text": "Avoid Storing Tokens or Keys in Source Code Vulnerability"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "unittests/Format/FormatTest.cpp"
+                },
+                "region": {
+                  "startLine": 14009,
+                  "startColumn": 15,
+                  "endLine": 14009,
+                  "endColumn": 79,
+                  "charOffset": 533251,
+                  "charLength": 64,
+                  "snippet": {
+                    "text": "\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\"",
+                    "rendered": {
+                      "text": "\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\"",
+                      "markdown": "`\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\"`"
+                    }
+                  },
+                  "sourceLanguage": "cpp"
+                }
+              }
+            }
+          ],
+          "properties": {
+            "DevSkimSeverity": "Important",
+            "DevSkimConfidence": "Medium",
+            "tags": [
+              "Implementation.Privacy.Token"
+            ]
+          }
+        },
+        {
+          "ruleId": "glog-f3a992cc-e2c8-4220-95a7-cd8265e43b2f",
+          "kind": "fail",
+          "level": "note",
+          "message": {
+            "text": "Detected Vulnerability in C Function (strlen)"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "unittests/Basic/SourceManagerTest.cpp"
+                },
+                "region": {
+                  "startLine": 139,
+                  "startColumn": 40,
+                  "endLine": 139,
+                  "endColumn": 54,
+                  "charOffset": 4602,
+                  "charLength": 14,
+                  "snippet": {
+                    "text": "strlen(Source)",
+                    "rendered": {
+                      "text": "strlen(Source)",
+                      "markdown": "`strlen(Source)`"
+                    }
+                  },
+                  "sourceLanguage": "cpp"
+                }
+              }
+            }
+          ],
+          "fixes": [
+            {
+              "description": {
+                "text": "If a string is missing a null terminator, strlen will read past the end of the buffer"
+              },
+              "artifactChanges": [
+                {
+                  "artifactLocation": {
+                    "uri": "unittests/Basic/SourceManagerTest.cpp"
+                  },
+                  "replacements": [
+                    {
+                      "deletedRegion": {
+                        "charOffset": 4602,
+                        "charLength": 14
+                      },
+                      "insertedContent": {
+                        "text": "strlen_s(Source, <size of Source>)"
+                      }
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "description": {
+                "text": "If a string is missing a null terminator, strlen will read past the end of the buffer"
+              },
+              "artifactChanges": [
+                {
+                  "artifactLocation": {
+                    "uri": "unittests/Basic/SourceManagerTest.cpp"
+                  },
+                  "replacements": [
+                    {
+                      "deletedRegion": {
+                        "charOffset": 4602,
+                        "charLength": 14
+                      },
+                      "insertedContent": {
+                        "text": "strnlen(Source, <size of Source>)"
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "properties": {
+            "DevSkimSeverity": "BestPractice",
+            "DevSkimConfidence": "High",
+            "tags": [
+              "API.DangerousAPI.ProblematicFunction"
+            ]
+          }
+        },
+        {
+          "ruleId": "glog-7d2781c0-12a6-4f07-a84c-3541eb06ef9c",
+          "kind": "fail",
+          "level": "note",
+          "message": {
+            "text": "Detected Vulnerability in C Function (strlen)"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "unittests/Format/FormatTestJS.cpp"
+                },
+                "region": {
+                  "startLine": 1442,
+                  "startColumn": 20,
+                  "endLine": 1442,
+                  "endColumn": 68,
+                  "charOffset": 49021,
+                  "charLength": 48,
+                  "snippet": {
+                    "text": "strlen(\"nearlyLooks  +   like +   ts + code;  \")",
+                    "rendered": {
+                      "text": "strlen(\"nearlyLooks  +   like +   ts + code;  \")",
+                      "markdown": "`strlen(\"nearlyLooks  +   like +   ts + code;  \")`"
+                    }
+                  },
+                  "sourceLanguage": "cpp"
+                }
+              }
+            }
+          ],
+          "fixes": [
+            {
+              "description": {
+                "text": "If a string is missing a null terminator, strlen will read past the end of the buffer"
+              },
+              "artifactChanges": [
+                {
+                  "artifactLocation": {
+                    "uri": "unittests/Format/FormatTestJS.cpp"
+                  },
+                  "replacements": [
+                    {
+                      "deletedRegion": {
+                        "charOffset": 49021,
+                        "charLength": 48
+                      },
+                      "insertedContent": {
+                        "text": "strlen_s(\"nearlyLooks  +   like +   ts + code;  \", <size of \"nearlyLooks  +   like +   ts + code;  \">)"
+                      }
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "description": {
+                "text": "If a string is missing a null terminator, strlen will read past the end of the buffer"
+              },
+              "artifactChanges": [
+                {
+                  "artifactLocation": {
+                    "uri": "unittests/Format/FormatTestJS.cpp"
+                  },
+                  "replacements": [
+                    {
+                      "deletedRegion": {
+                        "charOffset": 49021,
+                        "charLength": 48
+                      },
+                      "insertedContent": {
+                        "text": "strnlen(\"nearlyLooks  +   like +   ts + code;  \", <size of \"nearlyLooks  +   like +   ts + code;  \">)"
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "properties": {
+            "DevSkimSeverity": "BestPractice",
+            "DevSkimConfidence": "High",
+            "tags": [
+              "API.DangerousAPI.ProblematicFunction"
+            ]
+          }
+        },
+        {
+          "ruleId": "glog-36e629c2-0b83-4a20-b2ad-6271e3eb8488",
+          "kind": "fail",
+          "level": "error",
+          "message": {
+            "text": "Avoid Storing Tokens or Keys in Source Code Vulnerability"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "unittests/Format/FormatTest.cpp"
+                },
+                "region": {
+                  "startLine": 13998,
+                  "startColumn": 15,
+                  "endLine": 13998,
+                  "endColumn": 80,
+                  "charOffset": 532747,
+                  "charLength": 65,
+                  "snippet": {
+                    "text": "\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\"",
+                    "rendered": {
+                      "text": "\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\"",
+                      "markdown": "`\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\"`"
+                    }
+                  },
+                  "sourceLanguage": "cpp"
+                }
+              }
+            }
+          ],
+          "properties": {
+            "DevSkimSeverity": "Important",
+            "DevSkimConfidence": "Medium",
+            "tags": [
+              "Implementation.Privacy.Token"
+            ]
+          }
+        },
+        {
+          "ruleId": "glog-1bb74172-0a5e-4872-bed8-771552dce9a7",
+          "kind": "fail",
+          "level": "error",
+          "message": {
+            "text": "Avoid Storing Tokens or Keys in Source Code Vulnerability"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "unittests/Format/FormatTest.cpp"
+                },
+                "region": {
+                  "startLine": 14007,
+                  "startColumn": 15,
+                  "endLine": 14007,
+                  "endColumn": 79,
+                  "charOffset": 533133,
+                  "charLength": 64,
+                  "snippet": {
+                    "text": "\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\"",
+                    "rendered": {
+                      "text": "\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\"",
+                      "markdown": "`\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\"`"
+                    }
+                  },
+                  "sourceLanguage": "cpp"
+                }
+              }
+            }
+          ],
+          "properties": {
+            "DevSkimSeverity": "Important",
+            "DevSkimConfidence": "Medium",
+            "tags": [
+              "Implementation.Privacy.Token"
+            ]
+          }
+        }
+      ],
+      "newlineSequences": [
+        "\r\n",
+        "\n"
+      ]
+    }
+  ]
+}
