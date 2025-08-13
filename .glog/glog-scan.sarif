@@ -12,19 +12,7 @@
           "informationUri": "https://www.glog.ai",
           "rules": [
             {
-              "id": "glog-92d76e3d-9964-4358-a860-3c34fe0ed6a5",
-              "help": {
-                "text": "",
-                "markdown": "## Description\n\nThe `strlen()` function in C++ is used to find the length of a string. However, it can lead to vulnerabilities if not used properly. The function counts the number of characters in a string until it reaches a null character (`'\\0'`). If the string is not null-terminated, `strlen()` will continue reading memory until it encounters a null character, which can lead to buffer overflows, memory corruption, and other unexpected behavior.\n\n## Mitigation Advice\n\nTo mitigate this vulnerability, always ensure that your strings are null-terminated. Avoid using `strlen()` on strings that may not be null-terminated. Instead, consider using safer alternatives that take the size of the buffer as an argument, such as `strnlen()`, which will not read past the specified length.\n\n## Source Code Fix Recommendation\n\nInstead of:\n\n```cpp\n#include <cstring>\n\nchar Source[] = \"This is a string\";\nint length = strlen(Source);\n```\n\nUse:\n\n```cpp\n#include <cstring>\n\nchar Source[] = \"This is a string\";\nint length = strnlen(Source, sizeof(Source));\n```\n\n## Library Dependencies\n\nThe `strlen()` and `strnlen()` functions are part of the `<cstring>` library in C++.\n\n## References\n\n- [OWASP C++ Secure Coding Practices](https://cheatsheetseries.owasp.org/cheatsheets/C-Based_Toolchain_Hardening_Cheat_Sheet.html)\n- [CWE-126: Buffer Over-read](https://cwe.mitre.org/data/definitions/126.html)"
-              },
-              "properties": {
-                "tags": [
-                  "DS140021"
-                ]
-              }
-            },
-            {
-              "id": "glog-5c9932e9-dc10-458b-af2c-e58a7bd80d84",
+              "id": "glog-9c7c2c3c-f3d3-4d07-9812-9d76b94ca10e",
               "help": {
                 "text": "",
                 "markdown": "## Description\n\nThe `memcpy` function in C++ is used to copy a block of memory from one location to another. This function does not check for any buffer overflows, which can lead to vulnerabilities if the destination buffer is smaller than the source buffer. This can lead to overwriting of adjacent memory and can potentially lead to execution of arbitrary code, denial of service, or information disclosure.\n\n## Mitigation Advice\n\nTo mitigate this vulnerability, it is recommended to always ensure that the destination buffer is large enough to hold the data being copied from the source buffer. This can be done by checking the size of the destination buffer before calling the `memcpy` function. Additionally, consider using safer functions that include bounds checking, such as `strncpy` or `memcpy_s` (in C11), if available.\n\n## Source Code Fix Recommendation\n\nHere is a recommended fix for the provided code:\n\n```cpp\nif (protocols.size() <= getProtocolStorageSize()) {\n    memcpy(getProtocolStorage(), protocols.data(), protocols.size());\n} else {\n    // Handle error: destination buffer is too small\n}\n```\n\nIn this code, `getProtocolStorageSize()` is a hypothetical function that returns the size of the buffer returned by `getProtocolStorage()`. You would need to replace this with the actual way of getting the size of your buffer.\n\n## Library Dependencies\n\nThe `memcpy` function is part of the C standard library, so no additional libraries are needed for this code to execute properly.\n\n## References\n\n- [OWASP C++ Secure Coding Practices](https://cheatsheetseries.owasp.org/cheatsheets/C-Based_Toolchain_Hardening_Cheat_Sheet.html)\n- [CWE-120: Buffer Copy without Checking Size of Input ('Classic Buffer Overflow')](https://cwe.mitre.org/data/definitions/120.html)\n\nPlease note that the links provided are active and accessible to anonymous users at the time of writing."
@@ -36,7 +24,19 @@
               }
             },
             {
-              "id": "glog-2db537cd-366f-4b6f-a819-54ed97621068",
+              "id": "glog-4e0d37a6-4af0-42db-9ba4-4119efbe76a8",
+              "help": {
+                "text": "",
+                "markdown": "## Description\n\nThe `memcpy` function in C++ is used to copy a block of memory from one location to another. This function is vulnerable to buffer overflow attacks if the size of the data being copied is larger than the size of the destination buffer. This can lead to unexpected behavior, including program crashes, data corruption, and potential execution of malicious code.\n\nIn the provided code snippet `memcpy(Data, Odata, sizeof(T))`, if the size of `Odata` is larger than the size of `Data`, it can lead to a buffer overflow.\n\n## Mitigation Advice\n\nTo mitigate this vulnerability, you should always ensure that the destination buffer is large enough to hold the data being copied. This can be done by checking the size of the data and the size of the buffer before the `memcpy` operation.\n\n## Source Code Fix Recommendation\n\nHere is a recommended fix for the provided code snippet:\n\n```cpp\nif(sizeof(Odata) <= sizeof(Data)) {\n    memcpy(Data, Odata, sizeof(T));\n} else {\n    // Handle error\n}\n```\n\nIn this fix, we first check if the size of `Odata` is less than or equal to the size of `Data`. If it is, we proceed with the `memcpy` operation. If it is not, we handle the error in a way that is appropriate for the specific program.\n\n## Library Dependencies\n\nThe `memcpy` function is part of the C standard library, so the only library dependency required by the code example is:\n\n```cpp\n#include <cstring>\n```\n\n## OWASP Resources\n\n- [Buffer Overflow](https://owasp.org/www-community/vulnerabilities/Buffer_Overflow)\n\n## Common Weakness Enumeration (CWE)\n\n- [CWE-120: Buffer Copy without Checking Size of Input ('Classic Buffer Overflow')](https://cwe.mitre.org/data/definitions/120.html)"
+              },
+              "properties": {
+                "tags": [
+                  "DS121708"
+                ]
+              }
+            },
+            {
+              "id": "glog-e8e2648d-7a0e-4d26-bb6d-7a02400bf8df",
               "help": {
                 "text": "",
                 "markdown": "## Description\n\nThe `memcpy` function in C++ is used to copy a block of memory from one location to another. This function is vulnerable to buffer overflow attacks if the size of the data being copied is larger than the size of the destination buffer. In the provided code snippet, if `CurSize * sizeof(T)` is larger than the size of `NewElts`, it can lead to a buffer overflow.\n\n## Mitigation Advice\n\nTo mitigate this vulnerability, you should always ensure that the destination buffer is large enough to hold the data being copied. This can be done by checking the size of the destination buffer before calling `memcpy`. Additionally, consider using safer functions that include buffer size checks, such as `strncpy` or `memcpy_s` (in C11).\n\n## Source Code Fix Recommendation\n\nHere is a safer version of the code snippet using `memcpy_s`:\n\n```cpp\nsize_t size = CurSize * sizeof(T);\nif (size <= sizeof(NewElts)) {\n    memcpy_s(NewElts, size, Begin, size);\n} else {\n    // Handle error: size is larger than the buffer\n}\n```\n\n## Library Dependencies\n\nThe `memcpy` function is part of the C Standard Library, so you need to include the `cstring` header:\n\n```cpp\n#include <cstring>\n```\n\nFor `memcpy_s`, it's part of the C11 standard, so you need to include the `cstddef` header:\n\n```cpp\n#include <cstddef>\n```\n\n## References\n\n- [OWASP C++ Secure Coding Practices](https://cheatsheetseries.owasp.org/cheatsheets/C-Based_Toolchain_Hardening_Cheat_Sheet.html)\n- [CWE-120: Buffer Copy without Checking Size of Input ('Classic Buffer Overflow')](https://cwe.mitre.org/data/definitions/120.html)\n\nPlease note that the links provided are accessible to anonymous users at the time of writing this report."
@@ -48,22 +48,154 @@
               }
             },
             {
-              "id": "glog-49d5f0b7-a067-420d-9b27-23b24ae34c44",
+              "id": "glog-398e5bf5-663d-4325-b06c-3c87e33f12b6",
               "help": {
                 "text": "",
-                "markdown": "## Description\n\n\"Avoid Storing Tokens or Keys in Source Code Vulnerability\" is a common security vulnerability in C++ programming language where sensitive data such as API keys, tokens, or passwords are hard-coded directly into the source code. This is a bad practice as it exposes these sensitive data to potential attackers who gain access to the source code. This vulnerability can lead to unauthorized access to systems or services, data breaches, and other security incidents.\n\n## Mitigation Advice\n\nTo mitigate this vulnerability, avoid hard-coding sensitive data directly into your source code. Instead, use secure methods to store and retrieve these data, such as environment variables, secure configuration files, or secure key vaults. \n\nEnsure that these data are encrypted at rest and in transit, and that they are only accessible to authorized entities. Implement proper access controls and regularly audit access logs to detect any unauthorized access attempts.\n\n## Source Code Fix Recommendation\n\nThe specific vulnerability sink \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\" appears to be a placeholder for a token or key. To fix this, replace the hard-coded token or key with a secure method to retrieve it. For example, you can use an environment variable:\n\n```cpp\n#include <cstdlib> // Required for getenv\n\nconst char* token = std::getenv(\"TOKEN\");\nif (!token) {\n    // Handle error\n}\n```\n\nIn this example, the token is stored in an environment variable named \"TOKEN\". The `std::getenv` function retrieves the value of the environment variable.\n\n## Library Dependencies\n\nThe above code example requires the `<cstdlib>` library to use the `std::getenv` function.\n\n## References\n\n- [CWE-798: Use of Hard-coded Credentials](https://cwe.mitre.org/data/definitions/798.html)"
+                "markdown": "## Description\n\nThe `memcpy` function in C++ is used to copy a block of memory from one location to another. This function is vulnerable to buffer overflow attacks if the size of the data being copied is larger than the size of the destination buffer. In the provided code snippet, if `CurSize * sizeof(T)` is larger than the size of `NewElts`, it can lead to a buffer overflow.\n\n## Mitigation Advice\n\nTo mitigate this vulnerability, you should always ensure that the destination buffer is large enough to hold the data being copied. This can be done by checking the size of the destination buffer before calling `memcpy`. Additionally, consider using safer functions that include buffer size checks, such as `strncpy` or `memcpy_s` (in C11).\n\n## Source Code Fix Recommendation\n\nHere is a safer version of the code snippet using `memcpy_s`:\n\n```cpp\nsize_t size = CurSize * sizeof(T);\nif (size <= sizeof(NewElts)) {\n    memcpy_s(NewElts, size, Begin, size);\n} else {\n    // Handle error: size is larger than the buffer\n}\n```\n\n## Library Dependencies\n\nThe `memcpy` function is part of the C Standard Library, so you need to include the `cstring` header:\n\n```cpp\n#include <cstring>\n```\n\nFor `memcpy_s`, it's part of the C11 standard, so you need to include the `cstddef` header:\n\n```cpp\n#include <cstddef>\n```\n\n## References\n\n- [OWASP C++ Secure Coding Practices](https://cheatsheetseries.owasp.org/cheatsheets/C-Based_Toolchain_Hardening_Cheat_Sheet.html)\n- [CWE-120: Buffer Copy without Checking Size of Input ('Classic Buffer Overflow')](https://cwe.mitre.org/data/definitions/120.html)\n\nPlease note that the links provided are accessible to anonymous users at the time of writing this report."
               },
               "properties": {
                 "tags": [
-                  "DS173237"
+                  "DS121708"
                 ]
               }
             },
             {
-              "id": "glog-f3a992cc-e2c8-4220-95a7-cd8265e43b2f",
+              "id": "glog-af11e98b-e8b7-4def-bb0e-de433248546c",
               "help": {
                 "text": "",
-                "markdown": "## Description\n\nThe `strlen()` function in C++ is used to find the length of a string. However, it can lead to vulnerabilities if not used properly. The function counts the number of characters in a string until it reaches a null character (`'\\0'`). If the string is not null-terminated, `strlen()` will continue reading memory until it encounters a null character, which can lead to buffer overflows, memory corruption, and other unexpected behavior.\n\n## Mitigation Advice\n\nTo mitigate this vulnerability, always ensure that your strings are null-terminated. Avoid using `strlen()` on strings that may not be null-terminated. Instead, consider using safer alternatives that take the size of the buffer as an argument, such as `strnlen()`, which will not read past the specified length.\n\n## Source Code Fix Recommendation\n\nInstead of:\n\n```cpp\n#include <cstring>\n\nchar Source[] = \"This is a string\";\nint length = strlen(Source);\n```\n\nUse:\n\n```cpp\n#include <cstring>\n\nchar Source[] = \"This is a string\";\nint length = strnlen(Source, sizeof(Source));\n```\n\n## Library Dependencies\n\nThe `strlen()` and `strnlen()` functions are part of the `<cstring>` library in C++.\n\n## References\n\n- [OWASP C++ Secure Coding Practices](https://cheatsheetseries.owasp.org/cheatsheets/C-Based_Toolchain_Hardening_Cheat_Sheet.html)\n- [CWE-126: Buffer Over-read](https://cwe.mitre.org/data/definitions/126.html)"
+                "markdown": "## Description\n\nThe `memcpy` function in C++ is used to copy a block of memory from one location to another. This function does not check for the size of the destination buffer, which can lead to buffer overflow if the source is larger than the destination. This is a common vulnerability in C++ programming, often exploited to execute arbitrary code or cause a denial of service.\n\n## Mitigation Advice\n\nTo mitigate this vulnerability, always ensure that the destination buffer is large enough to hold the data being copied. This can be done by checking the size of the source and destination before calling `memcpy`. Alternatively, consider using safer functions that include size checks, such as `strncpy` or `memcpy_s` (in C11).\n\n## Source Code Fix Recommendation\n\nHere is a recommended fix for the provided code:\n\n```cpp\nif (numArgs * sizeof(ArgsUnion) <= sizeof(getArgsBuffer())) {\n    memcpy(getArgsBuffer(), args, numArgs * sizeof(ArgsUnion));\n} else {\n    // Handle error: buffer is too small\n}\n```\n\n## Library Dependencies\n\nThe `memcpy` function is part of the C standard library, so no additional libraries are required for this code to execute.\n\n## OWASP and CWE Links\n\n- [OWASP C++ Secure Coding Practices](https://cheatsheetseries.owasp.org/cheatsheets/C-Based_Toolchain_Hardening_Cheat_Sheet.html)\n- [CWE-120: Buffer Copy without Checking Size of Input ('Classic Buffer Overflow')](https://cwe.mitre.org/data/definitions/120.html)\n\nPlease note that these links are subject to change and may not always be accessible. Always refer to the latest OWASP and CWE guidelines for up-to-date information."
+              },
+              "properties": {
+                "tags": [
+                  "DS121708"
+                ]
+              }
+            },
+            {
+              "id": "glog-04136682-f6b2-465c-8502-188db67e0ec8",
+              "help": {
+                "text": "",
+                "markdown": "## Description\n\nThe `memcpy` function in C++ is used to copy a block of memory from one location to another. This function does not check for the size of the destination buffer, which can lead to buffer overflow if the source is larger than the destination. This is a common vulnerability in C++ programming, and can lead to serious security issues such as code execution, denial of service, or information disclosure.\n\nIn the provided code snippet, `memcpy(getArgsBuffer(), &PVal, sizeof(ArgsUnion))`, the `memcpy` function is copying the contents of `PVal` into the buffer returned by `getArgsBuffer()`. If the size of `PVal` is larger than the buffer, it can cause a buffer overflow.\n\n## Mitigation Advice\n\nTo mitigate this vulnerability, you should always ensure that the destination buffer is large enough to hold the source data. This can be done by checking the size of the source and destination before calling `memcpy`.\n\n## Source Code Fix Recommendation\n\nA safer alternative to `memcpy` is `memmove`, which checks the size of the destination buffer before copying. However, the best solution is to use a function that limits the amount of data copied to the size of the destination buffer, such as `strncpy` or `snprintf`.\n\nHere's how you might modify the provided code snippet:\n\n```cpp\nArgsUnion PVal;\nchar* buffer = getArgsBuffer();\nsize_t bufferSize = sizeof(buffer);\nif (bufferSize >= sizeof(PVal)) {\n    memcpy(buffer, &PVal, sizeof(PVal));\n} else {\n    // Handle error: buffer is too small\n}\n```\n\n## Library Dependencies\n\nThe `memcpy` function is part of the C standard library, so no additional libraries are needed to use it.\n\n## References\n\n- [OWASP C++ Secure Coding Practices](https://cheatsheetseries.owasp.org/cheatsheets/C-Based_Toolchain_Hardening_Cheat_Sheet.html)\n- [CWE-120: Buffer Copy without Checking Size of Input ('Classic Buffer Overflow')](https://cwe.mitre.org/data/definitions/120.html)\n\nPlease note that the links provided are accessible to anonymous users at the time of writing this report."
+              },
+              "properties": {
+                "tags": [
+                  "DS121708"
+                ]
+              }
+            },
+            {
+              "id": "glog-45779b48-5fbf-4714-990f-e829cb25126b",
+              "help": {
+                "text": "",
+                "markdown": "## Description\n\nThe `memcpy` function in C++ is used to copy a block of memory from one location to another. This function does not check the size of the destination buffer, which can lead to buffer overflow if the source data is larger than the destination buffer. This is a common vulnerability in C++ programming that can lead to serious security issues such as data corruption, system crash, or even arbitrary code execution.\n\n## Mitigation Advice\n\nTo mitigate this vulnerability, you should always ensure that the destination buffer is large enough to hold the source data. This can be done by checking the size of the source data and the size of the destination buffer before calling the `memcpy` function. If the source data is larger than the destination buffer, you should not proceed with the copy operation.\n\n## Source Code Fix Recommendation\n\nHere is a simple fix for the vulnerability:\n\n```cpp\nif (size <= sizeof(Data)) {\n    memcpy(Data, Loc.Data, size);\n} else {\n    // Handle error\n}\n```\n\nIn this code, we first check if the size of the source data is less than or equal to the size of the destination buffer. If it is, we proceed with the copy operation. Otherwise, we handle the error in an appropriate manner.\n\n## Library Dependencies\n\nThe `memcpy` function is part of the C standard library, so you need to include the `<cstring>` header file in your code:\n\n```cpp\n#include <cstring>\n```\n\n## OWASP Resources\n\n- [Buffer Overflow](https://owasp.org/www-community/vulnerabilities/Buffer_Overflow)\n- [CWE-120: Buffer Copy without Checking Size of Input ('Classic Buffer Overflow')](https://cwe.mitre.org/data/definitions/120.html)\n\nPlease note that these links are subject to change and may not always be accessible. Always check the validity of the links before using them."
+              },
+              "properties": {
+                "tags": [
+                  "DS121708"
+                ]
+              }
+            },
+            {
+              "id": "glog-d1b8ea6c-9941-4b4d-bab6-1cfcf93ce478",
+              "help": {
+                "text": "",
+                "markdown": "## Description\n\nThe `memcpy` function in C++ is used to copy a block of memory from one location to another. This function does not check the size of the destination buffer, which can lead to buffer overflow if the source data is larger than the destination buffer. This is a common vulnerability in C++ programming that can lead to serious security issues such as data corruption, system crash, or even arbitrary code execution.\n\n## Mitigation Advice\n\nTo mitigate this vulnerability, you should always ensure that the destination buffer is large enough to hold the source data. This can be done by checking the size of the source data and the size of the destination buffer before calling the `memcpy` function. If the source data is larger than the destination buffer, you should not proceed with the copy operation.\n\n## Source Code Fix Recommendation\n\nHere is a simple fix for the vulnerability:\n\n```cpp\nif (size <= sizeof(Data)) {\n    memcpy(Data, Loc.Data, size);\n} else {\n    // Handle error\n}\n```\n\nIn this code, we first check if the size of the source data is less than or equal to the size of the destination buffer. If it is, we proceed with the copy operation. Otherwise, we handle the error in an appropriate manner.\n\n## Library Dependencies\n\nThe `memcpy` function is part of the C standard library, so you need to include the `<cstring>` header file in your code:\n\n```cpp\n#include <cstring>\n```\n\n## OWASP Resources\n\n- [Buffer Overflow](https://owasp.org/www-community/vulnerabilities/Buffer_Overflow)\n- [CWE-120: Buffer Copy without Checking Size of Input ('Classic Buffer Overflow')](https://cwe.mitre.org/data/definitions/120.html)\n\nPlease note that these links are subject to change and may not always be accessible. Always check the validity of the links before using them."
+              },
+              "properties": {
+                "tags": [
+                  "DS121708"
+                ]
+              }
+            },
+            {
+              "id": "glog-219182b1-6df6-4bcb-ad90-db0ff7afa823",
+              "help": {
+                "text": "",
+                "markdown": "## Description\n\nThe `memcpy` function in C++ is used to copy a block of memory from one location to another. This function does not check the size of the destination buffer, which can lead to buffer overflow if the source data is larger than the destination buffer. This is a common vulnerability in C++ programming that can lead to serious security issues such as data corruption, system crash, or even arbitrary code execution.\n\n## Mitigation Advice\n\nTo mitigate this vulnerability, you should always ensure that the destination buffer is large enough to hold the source data. This can be done by checking the size of the source data and the size of the destination buffer before calling the `memcpy` function. If the source data is larger than the destination buffer, you should not proceed with the copy operation.\n\n## Source Code Fix Recommendation\n\nHere is a simple fix for the vulnerability:\n\n```cpp\nif (size <= sizeof(Data)) {\n    memcpy(Data, Loc.Data, size);\n} else {\n    // Handle error\n}\n```\n\nIn this code, we first check if the size of the source data is less than or equal to the size of the destination buffer. If it is, we proceed with the copy operation. Otherwise, we handle the error in an appropriate manner.\n\n## Library Dependencies\n\nThe `memcpy` function is part of the C standard library, so you need to include the `<cstring>` header file in your code:\n\n```cpp\n#include <cstring>\n```\n\n## OWASP Resources\n\n- [Buffer Overflow](https://owasp.org/www-community/vulnerabilities/Buffer_Overflow)\n- [CWE-120: Buffer Copy without Checking Size of Input ('Classic Buffer Overflow')](https://cwe.mitre.org/data/definitions/120.html)\n\nPlease note that these links are subject to change and may not always be accessible. Always check the validity of the links before using them."
+              },
+              "properties": {
+                "tags": [
+                  "DS121708"
+                ]
+              }
+            },
+            {
+              "id": "glog-0e19cbbe-4f6d-4609-9975-6fa0f1265c4e",
+              "help": {
+                "text": "",
+                "markdown": "## Description\n\nThe `memcpy` function in C++ is used to copy a block of memory from one location to another. This function does not check the size of the destination buffer, which can lead to buffer overflow if the source data is larger than the destination buffer. This is a common vulnerability in C++ programming that can lead to serious security issues such as data corruption, system crash, or even arbitrary code execution.\n\n## Mitigation Advice\n\nTo mitigate this vulnerability, you should always ensure that the destination buffer is large enough to hold the source data. This can be done by checking the size of the source data and the size of the destination buffer before calling the `memcpy` function. If the source data is larger than the destination buffer, you should not proceed with the copy operation.\n\n## Source Code Fix Recommendation\n\nHere is a simple fix for the vulnerability:\n\n```cpp\nif (size <= sizeof(Data)) {\n    memcpy(Data, Loc.Data, size);\n} else {\n    // Handle error\n}\n```\n\nIn this code, we first check if the size of the source data is less than or equal to the size of the destination buffer. If it is, we proceed with the copy operation. Otherwise, we handle the error in an appropriate manner.\n\n## Library Dependencies\n\nThe `memcpy` function is part of the C standard library, so you need to include the `<cstring>` header file in your code:\n\n```cpp\n#include <cstring>\n```\n\n## OWASP Resources\n\n- [Buffer Overflow](https://owasp.org/www-community/vulnerabilities/Buffer_Overflow)\n- [CWE-120: Buffer Copy without Checking Size of Input ('Classic Buffer Overflow')](https://cwe.mitre.org/data/definitions/120.html)\n\nPlease note that these links are subject to change and may not always be accessible. Always check the validity of the links before using them."
+              },
+              "properties": {
+                "tags": [
+                  "DS121708"
+                ]
+              }
+            },
+            {
+              "id": "glog-7427fe4a-b327-4c51-afae-3a4ca51a4c95",
+              "help": {
+                "text": "",
+                "markdown": "## Description\n\nThe `memcpy` function in C++ is used to copy a block of memory from one location to another. This function is vulnerable to buffer overflow attacks if the size of the data being copied is larger than the size of the destination buffer. This can lead to corruption of valid data, crash the application, or in worst case scenarios, allow an attacker to execute arbitrary code.\n\n## Mitigation Advice\n\nTo mitigate this vulnerability, it is recommended to always ensure that the destination buffer is large enough to hold the data being copied. This can be done by checking the size of the data and the size of the buffer before calling `memcpy`. \n\nAdditionally, consider using safer functions that include the size of the destination buffer as a parameter, such as `strncpy` or `memcpy_s`, to prevent buffer overflows.\n\n## Source Code Fix Recommendation\n\nHere is a possible fix for the provided code:\n\n```cpp\nsize_t size = asDerived();\nif (size <= sizeof(getExtraLocalData())) {\n    memcpy(getExtraLocalData(), other.getExtraLocalData(), size);\n} else {\n    // Handle error\n}\n```\n\nIn this fix, we first check if the size of the data being copied is less than or equal to the size of the destination buffer. If it is, we proceed with the `memcpy`. If it is not, we handle the error in a way that is appropriate for the application.\n\n## Library Dependencies\n\nThe `memcpy` function is part of the C standard library, so no additional libraries are needed for this code to execute properly.\n\n## OWASP Resources\n\n- [Buffer Overflow](https://owasp.org/www-community/vulnerabilities/Buffer_Overflow)\n\n## Common Weakness Enumeration (CWE)\n\n- [CWE-120: Buffer Copy without Checking Size of Input ('Classic Buffer Overflow')](https://cwe.mitre.org/data/definitions/120.html)\n- [CWE-119: Improper Restriction of Operations within the Bounds of a Memory Buffer](https://cwe.mitre.org/data/definitions/119.html)"
+              },
+              "properties": {
+                "tags": [
+                  "DS121708"
+                ]
+              }
+            },
+            {
+              "id": "glog-10b90d54-56f8-4c62-a13f-a9cc3a3a3be4",
+              "help": {
+                "text": "",
+                "markdown": "## Description\n\nThe vulnerability in question is related to the `memcpy` function in C++. This function is used to copy a block of memory from one location to another. The vulnerability arises when the size of the destination buffer is less than the size of the source buffer. This can lead to buffer overflow, which can cause the program to crash or, in worst-case scenarios, allow an attacker to execute arbitrary code.\n\n## Mitigation Advice\n\nTo mitigate this vulnerability, it is recommended to always ensure that the destination buffer is large enough to hold the data being copied from the source buffer. This can be done by checking the size of the destination buffer before calling `memcpy`.\n\nAdditionally, consider using safer alternatives to `memcpy`, such as `strncpy` or `memcpy_s`, which include a length parameter to prevent buffer overflow.\n\n## Source Code Fix Recommendation\n\nWithout the full context of the code, it's hard to provide a specific fix. However, a general fix would be to check the size of the destination buffer before calling `memcpy`. Here's an example:\n\n```cpp\nstd::string lowerName = getLowerName();\nstd::string upperNameData = getUpperName().data();\n\nif (lowerName.size() >= upperNameData.size()) {\n    memcpy(&lowerName[0], &upperNameData[0], upperNameData.size());\n} else {\n    // Handle error: destination buffer is too small\n}\n```\n\n## Library Dependencies\n\nThe code example appears to use the following libraries:\n\n- `<cstring>` for `memcpy`\n- `<string>` for `std::string`\n\n## References\n\n- [CWE-120: Buffer Copy without Checking Size of Input ('Classic Buffer Overflow')](https://cwe.mitre.org/data/definitions/120.html)\n\nPlease note that the links provided are active and accessible to anonymous users at the time of writing this report."
+              },
+              "properties": {
+                "tags": [
+                  "DS121708"
+                ]
+              }
+            },
+            {
+              "id": "glog-68375fa9-76b9-4a7b-a9e6-4f14995e39d9",
+              "help": {
+                "text": "",
+                "markdown": "## Description\n\nThe `memcpy` function in C++ is used to copy a block of memory from one location to another. This function is vulnerable to buffer overflow attacks if the size of the data being copied is larger than the size of the destination buffer. In the provided code snippet, the `memcpy` function is copying data from `other.getLocalData()` to `getLocalData()`. If the size of the data returned by `other.getLocalData()` is larger than the size of the buffer returned by `getLocalData()`, a buffer overflow will occur.\n\n## Mitigation Advice\n\nTo mitigate this vulnerability, you should always ensure that the destination buffer is large enough to hold the data being copied. This can be done by checking the size of the data before calling `memcpy`. If the data is too large, you should either increase the size of the destination buffer or reduce the size of the data being copied.\n\n## Source Code Fix Recommendation\n\nHere is a recommended fix for the provided code snippet:\n\n```cpp\nLocalData* localData = getLocalData();\nconst LocalData* otherData = other.getLocalData();\n\nif (sizeof(*otherData) <= sizeof(*localData)) {\n    memcpy(localData, otherData, sizeof(*otherData));\n} else {\n    // Handle error\n}\n```\n\nIn this fix, we first get pointers to the local data and the other data. We then check if the size of the other data is less than or equal to the size of the local data before calling `memcpy`. If the other data is too large, we handle the error appropriately.\n\n## Library Dependencies\n\nThe `memcpy` function is part of the C standard library, so no additional library dependencies are required for the provided code snippet.\n\n## OWASP Resources\n\n- [Buffer Overflow](https://owasp.org/www-community/vulnerabilities/Buffer_Overflow)\n\n## Common Weakness Enumeration (CWE)\n\n- [CWE-120: Buffer Copy without Checking Size of Input ('Classic Buffer Overflow')](https://cwe.mitre.org/data/definitions/120.html)"
+              },
+              "properties": {
+                "tags": [
+                  "DS121708"
+                ]
+              }
+            },
+            {
+              "id": "glog-688f8c1b-d4e4-4aa4-a88f-dd188d280935",
+              "help": {
+                "text": "",
+                "markdown": "## Description\n\nThe vulnerability in question is related to the `memcpy` function in C++. This function is used to copy a block of memory from one location to another. The vulnerability arises when the size of the destination buffer is less than the size of the source buffer. This can lead to a buffer overflow, which can cause the program to crash or, in some cases, allow an attacker to execute arbitrary code.\n\n## Mitigation Advice\n\nTo mitigate this vulnerability, it is recommended to always ensure that the destination buffer is large enough to hold the data being copied. This can be done by checking the size of the destination buffer before calling `memcpy`. Additionally, consider using safer alternatives to `memcpy`, such as `strncpy` or `memcpy_s`, which include a length parameter to prevent buffer overflows.\n\n## Source Code Fix Recommendation\n\nHere is a simple fix for the vulnerability:\n\n```cpp\nsize_t len = strlen(S.data()) + 1;\nif (len <= sizeof(this->getLowerName())) {\n    memcpy(this->getLowerName(), S.data(), len);\n} else {\n    // Handle error\n}\n```\n\nIn this code, we first calculate the length of the source string (including the null terminator). We then check if this length is less than or equal to the size of the destination buffer. If it is, we proceed with the `memcpy`. If not, we handle the error in an appropriate manner.\n\n## Library Dependencies\n\nThe code example requires the following library dependencies:\n\n- `<cstring>`: for `memcpy` and `strlen` functions\n- `<string>`: for `std::string` class\n\n## References\n\n- [OWASP C++ Secure Coding Practices](https://cheatsheetseries.owasp.org/cheatsheets/C-Based_Toolchain_Hardening_Cheat_Sheet.html)\n- [CWE-120: Buffer Copy without Checking Size of Input ('Classic Buffer Overflow')](https://cwe.mitre.org/data/definitions/120.html)\n\nPlease note that the links provided are active and accessible to anonymous users at the time of writing this report."
+              },
+              "properties": {
+                "tags": [
+                  "DS121708"
+                ]
+              }
+            },
+            {
+              "id": "glog-14be4a90-1301-454f-acc6-b89d63112ab9",
+              "help": {
+                "text": "",
+                "markdown": "## Description\n\nThe `memcpy` function in C++ is used to copy a block of memory from one location to another. This function is vulnerable to buffer overflow attacks if the size of the data being copied is larger than the size of the destination buffer. In the provided code snippet, `memcpy(Mem, Ref.data(), Ref.size())`, if `Ref.size()` is larger than the size of `Mem`, it can lead to a buffer overflow.\n\nBuffer overflow vulnerabilities can lead to various security issues such as data corruption, crashes, and code execution. An attacker could exploit this vulnerability to execute arbitrary code in the context of the application.\n\n## Mitigation Advice\n\nTo mitigate this vulnerability, you should always ensure that the destination buffer is large enough to hold the data being copied. This can be done by checking the size of the data and the size of the buffer before calling `memcpy`.\n\nAdditionally, consider using safer alternatives to `memcpy` such as `strncpy` or `memcpy_s` which include a length parameter to prevent buffer overflows.\n\n## Source Code Fix Recommendation\n\nHere is a recommended fix for the provided code snippet:\n\n```cpp\nsize_t size = Ref.size();\nif (size <= sizeof(Mem)) {\n    memcpy(Mem, Ref.data(), size);\n} else {\n    // Handle error\n}\n```\n\nIn this code, we first check if the size of the data is less than or equal to the size of the buffer. If it is, we proceed with the `memcpy`. If it's not, we handle the error appropriately.\n\n## Library Dependencies\n\nThe `memcpy` function is part of the C Standard Library, so no additional libraries are needed for the provided code snippet.\n\n## References\n\n- [OWASP Buffer Overflow](https://owasp.org/www-community/vulnerabilities/Buffer_Overflow)\n- [CWE-120: Buffer Copy without Checking Size of Input ('Classic Buffer Overflow')](https://cwe.mitre.org/data/definitions/120.html)"
+              },
+              "properties": {
+                "tags": [
+                  "DS121708"
+                ]
+              }
+            },
+            {
+              "id": "glog-751e3879-9ae0-401b-9a3d-be6e3d43c74d",
+              "help": {
+                "text": "",
+                "markdown": "## Description\n\nThe `strlen()` function in C++ is used to find the length of a string. However, it can lead to vulnerabilities if not used properly. The function counts the number of characters in a string until it reaches a null character (`\\0`). If the string is not null-terminated, `strlen()` will continue reading memory until it encounters a null character, which can lead to buffer overflows, memory corruption, and other unexpected behavior.\n\n## Mitigation Advice\n\nTo mitigate this vulnerability, always ensure that your strings are null-terminated. Avoid using `strlen()` on strings that may not be null-terminated. Instead, consider using safer alternatives that take the size of the buffer as an argument, such as `strnlen()`, which will not read past the specified length, even if it does not encounter a null character.\n\n## Source Code Fix Recommendation\n\nInstead of:\n\n```cpp\n#include <cstring>\n\nchar S[100];\n// ... populate S ...\nsize_t len = strlen(S);\n```\n\nUse:\n\n```cpp\n#include <cstring>\n\nchar S[100];\n// ... populate S ...\nsize_t len = strnlen(S, sizeof(S));\n```\n\n## Library Dependencies\n\nThe `strlen()` and `strnlen()` functions are part of the `<cstring>` library in C++.\n\n## References\n\n- [OWASP C++ Secure Coding Practices](https://cheatsheetseries.owasp.org/cheatsheets/C-Based_Toolchain_Hardening_Cheat_Sheet.html)\n- [CWE-126: Buffer Over-read](https://cwe.mitre.org/data/definitions/126.html)"
               },
               "properties": {
                 "tags": [
@@ -72,10 +204,46 @@
               }
             },
             {
-              "id": "glog-7d2781c0-12a6-4f07-a84c-3541eb06ef9c",
+              "id": "glog-e804b128-139d-410d-9636-c44ba15a4abe",
               "help": {
                 "text": "",
-                "markdown": "## Description\n\nThe `strlen` function in C++ is used to find the length of a string. However, it can lead to vulnerabilities if not used properly. The function counts the number of characters in a string up to but not including the first null character. If the string does not end with a null character, `strlen` will continue reading memory until it encounters a null character, potentially leading to buffer overflows, memory corruption, and other undefined behavior.\n\nIn the provided code snippet, `strlen(\"nearlyLooks  +   like +   ts + code;  \")`, there is no direct vulnerability as the string is a constant and properly null-terminated. However, if the string was replaced with a variable that could be manipulated by an attacker, it could lead to the aforementioned issues.\n\n## Mitigation Advice\n\nTo mitigate this vulnerability, always ensure that strings are null-terminated before passing them to `strlen`. If the length of the string is known at compile time, consider using that value directly instead of calling `strlen`.\n\n## Source Code Fix Recommendation\n\nIf the string is not a constant and its length is not known at compile time, consider using `strnlen` instead of `strlen`. `strnlen` takes an additional parameter that specifies the maximum number of characters to read. This can prevent buffer overflows if the string is not null-terminated.\n\n```cpp\n#include <string.h>\n\nconst char* str = \"nearlyLooks  +   like +   ts + code;  \";\nsize_t len = strnlen(str, 100);  // Replace 100 with the actual maximum length of the string\n```\n\n## Library Dependencies\n\nThe `strlen` function is part of the C standard library, so no additional libraries are needed to use it.\n\n## References\n\n- [OWASP C++ Secure Coding Practices](https://cheatsheetseries.owasp.org/cheatsheets/C-Based_Toolchain_Hardening_Cheat_Sheet.html)\n- [CWE-126: Buffer Over-read](https://cwe.mitre.org/data/definitions/126.html)\n\nPlease note that the links provided are accessible to anonymous users at the time of writing this report."
+                "markdown": "### Description\n\nThe \"Vulnerable/Compromised Hash Algorithm\" vulnerability in C++ refers to the use of cryptographic hash functions that are considered weak or broken, such as MD5. MD5 is known to be vulnerable to collision attacks, where two different inputs produce the same hash output. This can lead to security issues such as data integrity violations, authentication bypass, and other cryptographic weaknesses.\n\n### General Mitigation Advice\n\n1. **Avoid Using MD5**: Replace MD5 with a more secure hash function, such as SHA-256 or SHA-3.\n2. **Use a Cryptographic Library**: Utilize well-established cryptographic libraries that provide secure implementations of hash functions.\n3. **Regularly Update Libraries**: Ensure that cryptographic libraries are up-to-date to benefit from the latest security patches and improvements.\n\n### Source Code Fix Recommendation\n\nBelow is an example of how to replace MD5 with SHA-256 using the OpenSSL library in C++.\n\n```cpp\n#include <openssl/sha.h>\n#include <iostream>\n#include <iomanip>\n#include <sstream>\n#include <string>\n\n// Function to compute SHA-256 hash\nstd::string computeSHA256(const std::string& input) {\n    unsigned char hash[SHA256_DIGEST_LENGTH];\n    SHA256_CTX sha256;\n    SHA256_Init(&sha256);\n    SHA256_Update(&sha256, input.c_str(), input.size());\n    SHA256_Final(hash, &sha256);\n\n    std::stringstream ss;\n    for (int i = 0; i < SHA256_DIGEST_LENGTH; ++i) {\n        ss << std::hex << std::setw(2) << std::setfill('0') << static_cast<int>(hash[i]);\n    }\n    return ss.str();\n}\n\nint main() {\n    std::string data = \"example data\";\n    std::string hash = computeSHA256(data);\n    std::cout << \"SHA-256: \" << hash << std::endl;\n    return 0;\n}\n```\n\n### Library Dependencies\n\nTo execute the above code, you need the following library:\n\n- OpenSSL: This library provides the implementation of SHA-256 used in the example.\n\n### OWASP Resources\n\n- [OWASP Cryptographic Storage Cheat Sheet](https://cheatsheetseries.owasp.org/cheatsheets/Cryptographic_Storage_Cheat_Sheet.html)\n- [OWASP Top Ten 2021](https://owasp.org/Top10/)\n\n### Common Weakness Enumeration (CWE)\n\n- [CWE-327: Use of a Broken or Risky Cryptographic Algorithm](https://cwe.mitre.org/data/definitions/327.html)"
+              },
+              "properties": {
+                "tags": [
+                  "DS126858"
+                ]
+              }
+            },
+            {
+              "id": "glog-1ed9acee-45a0-46df-aae8-72241383e691",
+              "help": {
+                "text": "",
+                "markdown": "### Vulnerable/Compromised Hash Algorithm: MD5\n\nThe MD5 hash algorithm is considered cryptographically broken and unsuitable for further use due to its vulnerability to collision attacks. In C++ programming, using MD5 for hashing sensitive data can lead to security vulnerabilities, as attackers can generate different inputs that produce the same hash output, compromising data integrity and authenticity.\n\n### General Mitigation Advice\n\n1. **Avoid Using MD5**: Replace MD5 with a more secure hash function such as SHA-256 or SHA-3.\n2. **Use a Cryptographic Library**: Utilize well-established cryptographic libraries that provide secure implementations of hash functions.\n3. **Regularly Update Libraries**: Ensure that cryptographic libraries are up-to-date to benefit from the latest security patches and improvements.\n\n### Source Code Fix Recommendation\n\nBelow is an example of how to replace MD5 with SHA-256 using the OpenSSL library in C++.\n\n```cpp\n#include <openssl/sha.h>\n#include <iostream>\n#include <iomanip>\n#include <sstream>\n#include <string>\n\n// Function to compute SHA-256 hash\nstd::string computeSHA256(const std::string& data) {\n    unsigned char hash[SHA256_DIGEST_LENGTH];\n    SHA256_CTX sha256;\n    SHA256_Init(&sha256);\n    SHA256_Update(&sha256, data.c_str(), data.size());\n    SHA256_Final(hash, &sha256);\n\n    std::stringstream ss;\n    for (int i = 0; i < SHA256_DIGEST_LENGTH; ++i) {\n        ss << std::hex << std::setw(2) << std::setfill('0') << (int)hash[i];\n    }\n    return ss.str();\n}\n\nint main() {\n    std::string data = \"Sensitive data to hash\";\n    std::string hash = computeSHA256(data);\n    std::cout << \"SHA-256 Hash: \" << hash << std::endl;\n    return 0;\n}\n```\n\n### Library Dependencies\n\nTo execute the above code, you need the following library:\n\n- **OpenSSL**: Ensure that OpenSSL is installed and linked with your C++ project.\n\n### Relevant OWASP Resources\n\n- [OWASP Cryptographic Storage Cheat Sheet](https://cheatsheetseries.owasp.org/cheatsheets/Cryptographic_Storage_Cheat_Sheet.html)\n- [OWASP Top Ten 2021](https://owasp.org/Top10/)\n\n### Common Weakness Enumeration (CWE)\n\n- [CWE-327: Use of a Broken or Risky Cryptographic Algorithm](https://cwe.mitre.org/data/definitions/327.html)"
+              },
+              "properties": {
+                "tags": [
+                  "DS126858"
+                ]
+              }
+            },
+            {
+              "id": "glog-2c789bcd-0ba6-4f84-a3ae-8cc132dec086",
+              "help": {
+                "text": "",
+                "markdown": "### Vulnerable/Compromised Hash Algorithm: MD5\n\nThe MD5 hash algorithm is considered cryptographically broken and unsuitable for further use due to its vulnerability to collision attacks. In C++ programming, using MD5 for hashing sensitive data can lead to security vulnerabilities, as attackers can generate different inputs that produce the same hash output, compromising data integrity and authenticity.\n\n### General Mitigation Advice\n\n1. **Avoid Using MD5**: Replace MD5 with a more secure hash function such as SHA-256 or SHA-3.\n2. **Use a Cryptographic Library**: Utilize well-established cryptographic libraries that provide secure implementations of hash functions.\n3. **Regularly Update Libraries**: Ensure that cryptographic libraries are up-to-date to benefit from the latest security patches and improvements.\n\n### Source Code Fix Recommendation\n\nBelow is an example of how to replace MD5 with SHA-256 using the OpenSSL library in C++.\n\n```cpp\n#include <openssl/sha.h>\n#include <iostream>\n#include <iomanip>\n#include <sstream>\n#include <string>\n\n// Function to compute SHA-256 hash\nstd::string computeSHA256(const std::string& data) {\n    unsigned char hash[SHA256_DIGEST_LENGTH];\n    SHA256_CTX sha256;\n    SHA256_Init(&sha256);\n    SHA256_Update(&sha256, data.c_str(), data.size());\n    SHA256_Final(hash, &sha256);\n\n    std::stringstream ss;\n    for (int i = 0; i < SHA256_DIGEST_LENGTH; ++i) {\n        ss << std::hex << std::setw(2) << std::setfill('0') << (int)hash[i];\n    }\n    return ss.str();\n}\n\nint main() {\n    std::string data = \"Sensitive data to hash\";\n    std::string hash = computeSHA256(data);\n    std::cout << \"SHA-256 Hash: \" << hash << std::endl;\n    return 0;\n}\n```\n\n### Library Dependencies\n\nTo execute the above code, you need the following library:\n\n- **OpenSSL**: Ensure that OpenSSL is installed and linked with your C++ project.\n\n### Relevant OWASP Resources\n\n- [OWASP Cryptographic Storage Cheat Sheet](https://cheatsheetseries.owasp.org/cheatsheets/Cryptographic_Storage_Cheat_Sheet.html)\n- [OWASP Top Ten 2021](https://owasp.org/Top10/)\n\n### Common Weakness Enumeration (CWE)\n\n- [CWE-327: Use of a Broken or Risky Cryptographic Algorithm](https://cwe.mitre.org/data/definitions/327.html)"
+              },
+              "properties": {
+                "tags": [
+                  "DS126858"
+                ]
+              }
+            },
+            {
+              "id": "glog-57b499fd-f5c8-4de5-9fcb-a68462ed82cb",
+              "help": {
+                "text": "",
+                "markdown": "## Description\n\nThe `strlen()` function in C and C++ is used to find the length of a string. However, it can lead to vulnerabilities if not used properly. The function counts the number of characters in a string until it reaches a null character (`'\\0'`). If the string is not null-terminated, `strlen()` will continue reading memory beyond the intended boundary, leading to a buffer overflow vulnerability. This can result in crashes, incorrect behavior, or potential execution of malicious code.\n\n## Mitigation Advice\n\nTo mitigate this vulnerability, always ensure that your strings are null-terminated. Be careful when manipulating strings, especially when using functions like `strcpy()`, `strcat()`, and `strlen()`, which do not check for buffer overflows.\n\nWhen possible, use safer alternatives that include a length parameter, such as `strnlen()`, `strncpy()`, and `strncat()`, which can prevent buffer overflows by not reading or writing past a specified length.\n\n## Source Code Fix Recommendation\n\nInstead of using `strlen(kind)`, use `strnlen(kind, MAX_LENGTH)`, where `MAX_LENGTH` is the maximum length of the string you expect. This will prevent `strnlen()` from reading beyond the end of the string and causing a buffer overflow.\n\n```cpp\n#include <string.h>\n\n#define MAX_LENGTH 100\n\n// ...\n\nsize_t length = strnlen(kind, MAX_LENGTH);\n```\n\n## Library Dependencies\n\nThe `strlen()` and `strnlen()` functions are part of the C standard library, so you need to include the `<string.h>` header file.\n\n## References\n\n- [OWASP Buffer Overflow](https://owasp.org/www-community/vulnerabilities/Buffer_Overflow)\n- [CWE-120: Buffer Copy without Checking Size of Input ('Classic Buffer Overflow')](https://cwe.mitre.org/data/definitions/120.html)\n- [CWE-126: Buffer Over-read](https://cwe.mitre.org/data/definitions/126.html)"
               },
               "properties": {
                 "tags": [
@@ -84,26 +252,134 @@
               }
             },
             {
-              "id": "glog-36e629c2-0b83-4a20-b2ad-6271e3eb8488",
+              "id": "glog-0911b150-9a3d-4778-868b-96be22c050c3",
               "help": {
                 "text": "",
-                "markdown": "## Description\n\n\"Avoid Storing Tokens or Keys in Source Code Vulnerability\" is a common security vulnerability in C++ programming language where sensitive data such as API keys, tokens, or passwords are hard-coded into the source code. This is a bad practice as it exposes these sensitive data to potential attackers who gain access to the source code. This vulnerability can lead to unauthorized access to systems or services, data breaches, and other security issues.\n\n## Mitigation Advice\n\nTo mitigate this vulnerability, avoid hard-coding sensitive data directly into your source code. Instead, use secure methods to store and retrieve these data, such as environment variables, secure server configurations, or encrypted databases. \n\n## Source Code Fix Recommendation\n\nThe specific vulnerability sink \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\" appears to be a placeholder for a sensitive data. To fix this, you could replace it with a secure method of storing and retrieving data. For example, you could use an environment variable:\n\n```cpp\n#include <cstdlib>\n\nconst char* token = std::getenv(\"TOKEN\");\n```\n\nIn this example, `TOKEN` is an environment variable that stores the sensitive data. This way, the sensitive data is not exposed in the source code.\n\n## Library Dependencies\n\nThe above code example requires the `cstdlib` library.\n\n## References\n\n- [CWE-798: Use of Hard-coded Credentials](https://cwe.mitre.org/data/definitions/798.html)"
+                "markdown": "## Description\n\nThe `memcpy` function in C++ is used to copy a block of memory from one location to another. This function does not check for the size of the destination buffer, which can lead to buffer overflow if the source is larger than the destination. This is a common vulnerability in C++ programming, often exploited by attackers to execute arbitrary code or cause a denial of service.\n\nIn the provided code snippet `memcpy(tmp, database, len+1)`, the `memcpy` function is copying `len+1` bytes from `database` to `tmp`. If `tmp` is not large enough to hold `len+1` bytes, this can result in a buffer overflow.\n\n## Mitigation Advice\n\nTo mitigate this vulnerability, you should always ensure that the destination buffer is large enough to hold the data being copied. This can be done by checking the size of the destination buffer before calling `memcpy`.\n\n## Source Code Fix Recommendation\n\nHere is a recommended fix for the provided code snippet:\n\n```cpp\nif (sizeof(tmp) >= len+1) {\n    memcpy(tmp, database, len+1);\n} else {\n    // Handle error\n}\n```\n\nIn this fixed code, we first check if `tmp` is large enough to hold `len+1` bytes. If it is, we proceed with the `memcpy`. If it is not, we handle the error in a way that is appropriate for the specific application.\n\n## Library Dependencies\n\nThe `memcpy` function is part of the C Standard Library, so the only library dependency for the provided code snippet is:\n\n```cpp\n#include <cstring>\n```\n\n## OWASP and CWE Links\n\n- [OWASP C++ Secure Coding Practices](https://cheatsheetseries.owasp.org/cheatsheets/C-Based_Toolchain_Hardening_Cheat_Sheet.html)\n- [CWE-120: Buffer Copy without Checking Size of Input ('Classic Buffer Overflow')](https://cwe.mitre.org/data/definitions/120.html)\n\nPlease note that these links are subject to change and may not always be accessible."
               },
               "properties": {
                 "tags": [
-                  "DS173237"
+                  "DS121708"
                 ]
               }
             },
             {
-              "id": "glog-1bb74172-0a5e-4872-bed8-771552dce9a7",
+              "id": "glog-990e730c-10f2-4586-8062-2aea4cce7371",
               "help": {
                 "text": "",
-                "markdown": "## Description\n\n\"Avoid Storing Tokens or Keys in Source Code Vulnerability\" is a common security vulnerability in C++ programming language where sensitive data such as API keys, tokens, or passwords are hard-coded directly into the source code. This is a bad practice as it exposes these sensitive data to potential attackers who gain access to the source code. This vulnerability can lead to unauthorized access to systems or services, data breaches, and other security incidents.\n\n## Mitigation Advice\n\nTo mitigate this vulnerability, avoid hard-coding sensitive data directly into your source code. Instead, use secure methods to store and retrieve these data, such as environment variables, secure configuration files, or secure key vaults. \n\nEnsure that these data are encrypted at rest and in transit, and that they are only accessible to authorized entities. Implement proper access controls and regularly audit access logs to detect any unauthorized access attempts.\n\n## Source Code Fix Recommendation\n\nThe specific vulnerability sink \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\" appears to be a placeholder for a token or key. To fix this, replace the hard-coded token or key with a secure method to retrieve it. For example, you can use an environment variable:\n\n```cpp\n#include <cstdlib> // Required for getenv\n\nconst char* token = std::getenv(\"TOKEN\");\nif (!token) {\n    // Handle error\n}\n```\n\nIn this example, the token is stored in an environment variable named \"TOKEN\". The `std::getenv` function retrieves the value of the environment variable.\n\n## Library Dependencies\n\nThe above code example requires the `<cstdlib>` library to use the `std::getenv` function.\n\n## References\n\n- [CWE-798: Use of Hard-coded Credentials](https://cwe.mitre.org/data/definitions/798.html)"
+                "markdown": "### Description\n\nThe \"Detected Issue with C Function (malloc)\" vulnerability in C++ typically arises from improper memory allocation using the `malloc` function. This can lead to buffer overflows, memory leaks, or undefined behavior if the allocated memory is not managed correctly. Specifically, using `malloc(len+1)` without proper checks can result in insufficient memory allocation if `len` is not properly validated or if the additional byte is not accounted for correctly.\n\n### General Mitigation Advice\n\n1. **Input Validation**: Always validate input sizes before using them in memory allocation functions.\n2. **Use Safer Alternatives**: Consider using C++ memory management features like `new` and `delete` or smart pointers (`std::unique_ptr`, `std::shared_ptr`) which provide automatic memory management.\n3. **Check Return Values**: Always check the return value of `malloc` to ensure that memory allocation was successful.\n4. **Initialize Memory**: Use functions like `calloc` which initialize the allocated memory to zero.\n5. **Free Memory**: Ensure that all allocated memory is properly freed to avoid memory leaks.\n\n### Source Code Fix Recommendation\n\n```cpp\n#include <iostream>\n#include <cstring> // For strlen\n\nint main() {\n    const char* input = \"example\";\n    size_t len = strlen(input);\n\n    // Allocate memory with an additional byte for the null terminator\n    char* buffer = (char*)malloc(len + 1);\n    if (buffer == nullptr) {\n        std::cerr << \"Memory allocation failed\" << std::endl;\n        return 1;\n    }\n\n    // Copy input to buffer and ensure null termination\n    strncpy(buffer, input, len);\n    buffer[len] = '\\0'; // Null-terminate the string\n\n    std::cout << \"Buffer content: \" << buffer << std::endl;\n\n    // Free allocated memory\n    free(buffer);\n\n    return 0;\n}\n```\n\n### Library Dependencies\n\n- `<iostream>`: For input and output operations.\n- `<cstring>`: For string manipulation functions like `strlen` and `strncpy`.\n\n### OWASP Resources\n\n- [OWASP Top Ten](https://owasp.org/www-project-top-ten/)\n- [OWASP Secure Coding Practices](https://owasp.org/www-project-secure-coding-practices-quick-reference-guide/)\n\n### Common Weakness Enumeration (CWE)\n\n- [CWE-122: Heap-based Buffer Overflow](https://cwe.mitre.org/data/definitions/122.html)\n- [CWE-401: Missing Release of Memory after Effective Lifetime](https://cwe.mitre.org/data/definitions/401.html)"
               },
               "properties": {
                 "tags": [
-                  "DS173237"
+                  "DS161085"
+                ]
+              }
+            },
+            {
+              "id": "glog-876126b3-775a-472c-9fa4-9ca5b29f54cf",
+              "help": {
+                "text": "",
+                "markdown": "## Description\n\nThe `strlen()` function in C and C++ is used to find the length of a string. However, it can lead to vulnerabilities if not used properly. The function counts the number of characters in a string until it reaches a null character (`\\0`). If the string is not null-terminated, `strlen()` will continue reading memory until it encounters a null character, potentially leading to buffer overflows, memory corruption, and other undefined behavior.\n\n## Mitigation Advice\n\nTo mitigate this vulnerability, always ensure that your strings are null-terminated. Avoid using `strlen()` on strings that may not be null-terminated. Instead, consider using safer alternatives that take the size of the buffer as an argument, such as `strnlen()`, which will not read past the specified length, even if it does not encounter a null character.\n\n## Source Code Fix Recommendation\n\nInstead of:\n\n```c++\nstrlen(database);\n```\n\nUse:\n\n```c++\nstrnlen(database, sizeof(database));\n```\n\nThis will prevent `strnlen()` from reading past the end of `database`, even if it is not null-terminated.\n\n## Library Dependencies\n\nThe `strlen()` function is part of the C standard library, so no additional libraries are needed.\n\n## References\n\n- [OWASP C/C++ Vulnerabilities](https://owasp.org/www-pdf-archive/OWASP_SCP_Quick_Reference_Guide_v2.pdf)\n- [CWE-126: Buffer Over-read](https://cwe.mitre.org/data/definitions/126.html)\n\nPlease note that the links provided are accessible to anonymous users at the time of writing this report."
+              },
+              "properties": {
+                "tags": [
+                  "DS140021"
+                ]
+              }
+            },
+            {
+              "id": "glog-eb056bac-fed3-4398-9d39-a2ffdc6fe6e1",
+              "help": {
+                "text": "",
+                "markdown": "## Description\n\nThe vulnerability in question is related to the `malloc` function in C++. This function is used to allocate a block of memory dynamically. If the size of the memory to be allocated is calculated incorrectly, it can lead to a buffer overflow vulnerability. This can occur if the `num_tokens` variable is controlled by the user or an attacker, and can be made large enough to cause the program to allocate more memory than is available, leading to a crash or potential execution of malicious code.\n\n## Mitigation Advice\n\nTo mitigate this vulnerability, you should ensure that the size of the memory to be allocated is correctly calculated and within the bounds of what is available. You should also validate and sanitize all user inputs to ensure they cannot cause a buffer overflow. \n\n## Source Code Fix Recommendation\n\nHere is a simple fix for the vulnerability:\n\n```cpp\nif (num_tokens > 0 && num_tokens <= MAX_SAFE_NUM_TOKENS) {\n    CXCursor* cursors = (CXCursor*) malloc(num_tokens * sizeof(CXCursor));\n    if (cursors == NULL) {\n        // Handle malloc failure\n    }\n    // Continue with program\n} else {\n    // Handle invalid num_tokens value\n}\n```\n\nIn this code, `MAX_SAFE_NUM_TOKENS` is a predefined constant that represents the maximum safe number of tokens that can be allocated. This value should be determined based on the specifics of your program and system.\n\n## Library Dependencies\n\nThe code example requires the `stdlib.h` library for the `malloc` function and the `clang-c/Index.h` library for the `CXCursor` type.\n\n## OWASP and CWE Links\n\n- [OWASP Buffer Overflow](https://owasp.org/www-community/vulnerabilities/Buffer_Overflow)\n- [CWE-120: Buffer Copy without Checking Size of Input ('Classic Buffer Overflow')](https://cwe.mitre.org/data/definitions/120.html)\n\nPlease note that these links are subject to change and may not always be accessible."
+              },
+              "properties": {
+                "tags": [
+                  "DS161085"
+                ]
+              }
+            },
+            {
+              "id": "glog-27b36bac-bfbb-4121-9212-1774fd02fd5a",
+              "help": {
+                "text": "",
+                "markdown": "## Description\n\nThe `strlen` function in C and C++ is used to find the length of a string. However, it can lead to vulnerabilities if not used properly. The function counts the number of characters in a string until it reaches a null character (`\\0`). If the string is not null-terminated, `strlen` will continue reading memory until it encounters a null character, potentially leading to buffer overflows, memory corruption, and other undefined behavior.\n\nIn the provided code snippet, `strlen(\"-test-annotate-tokens=\")`, there is no direct vulnerability as the string is a constant and properly null-terminated. However, if the string was user input or came from an untrusted source, it could potentially be exploited.\n\n## Mitigation Advice\n\nTo mitigate this vulnerability, always ensure that strings are null-terminated before passing them to `strlen`. If the string comes from an untrusted source, consider using a safer alternative such as `strnlen`, which takes a maximum length parameter and will not read past this length, even if it does not encounter a null character.\n\n## Source Code Fix Recommendation\n\nIf the string is user input or comes from an untrusted source, replace `strlen` with `strnlen` and provide a maximum length:\n\n```cpp\nconst char* str = \"-test-annotate-tokens=\";\nsize_t len = strnlen(str, MAX_LENGTH);\n```\n\nReplace `MAX_LENGTH` with the maximum length that `str` should have.\n\n## Library Dependencies\n\nThe `strlen` function is part of the C standard library, so no additional libraries are needed to use it.\n\n## References\n\n- [OWASP C/C++ Vulnerabilities](https://owasp.org/www-pdf-archive/OWASP_SCP_Quick_Reference_Guide_v2.pdf)\n- [CWE-126: Buffer Over-read](https://cwe.mitre.org/data/definitions/126.html)"
+              },
+              "properties": {
+                "tags": [
+                  "DS140021"
+                ]
+              }
+            },
+            {
+              "id": "glog-9dd7f2bf-20f7-47ef-8218-e05adabf539e",
+              "help": {
+                "text": "",
+                "markdown": "## Description\n\nThe `memcpy` function in C++ is used to copy a block of memory from one location to another. This function does not check for the size of the destination buffer, which can lead to buffer overflow if the source is larger than the destination. This is a common vulnerability in C++ programming, often exploited by attackers to execute arbitrary code or cause a denial of service.\n\nIn the provided code snippet `memcpy(tmp, database, len+1)`, the `memcpy` function is copying `len+1` bytes from `database` to `tmp`. If `tmp` is not large enough to hold `len+1` bytes, this can result in a buffer overflow.\n\n## Mitigation Advice\n\nTo mitigate this vulnerability, you should always ensure that the destination buffer is large enough to hold the data being copied. This can be done by checking the size of the destination buffer before calling `memcpy`.\n\n## Source Code Fix Recommendation\n\nHere is a recommended fix for the provided code snippet:\n\n```cpp\nif (sizeof(tmp) >= len+1) {\n    memcpy(tmp, database, len+1);\n} else {\n    // Handle error\n}\n```\n\nIn this fixed code, we first check if `tmp` is large enough to hold `len+1` bytes. If it is, we proceed with the `memcpy`. If it is not, we handle the error in a way that is appropriate for the specific application.\n\n## Library Dependencies\n\nThe `memcpy` function is part of the C Standard Library, so the only library dependency for the provided code snippet is:\n\n```cpp\n#include <cstring>\n```\n\n## OWASP and CWE Links\n\n- [OWASP C++ Secure Coding Practices](https://cheatsheetseries.owasp.org/cheatsheets/C-Based_Toolchain_Hardening_Cheat_Sheet.html)\n- [CWE-120: Buffer Copy without Checking Size of Input ('Classic Buffer Overflow')](https://cwe.mitre.org/data/definitions/120.html)\n\nPlease note that these links are subject to change and may not always be accessible."
+              },
+              "properties": {
+                "tags": [
+                  "DS121708"
+                ]
+              }
+            },
+            {
+              "id": "glog-e02e574c-004d-498a-acb4-302ad9d3dde4",
+              "help": {
+                "text": "",
+                "markdown": "### Description\n\nThe \"Detected Issue with C Function (malloc)\" vulnerability in C++ typically arises from improper memory allocation using the `malloc` function. This can lead to buffer overflows, memory leaks, or undefined behavior if the allocated memory is not managed correctly. Specifically, using `malloc(len+1)` without proper checks can result in insufficient memory allocation if `len` is not properly validated or if the additional byte is not accounted for correctly.\n\n### General Mitigation Advice\n\n1. **Input Validation**: Always validate input sizes before using them in memory allocation functions.\n2. **Use Safer Alternatives**: Consider using C++ memory management features like `new` and `delete` or smart pointers (`std::unique_ptr`, `std::shared_ptr`) which provide automatic memory management.\n3. **Check Return Values**: Always check the return value of `malloc` to ensure that memory allocation was successful.\n4. **Initialize Memory**: Use functions like `calloc` which initialize the allocated memory to zero.\n5. **Free Memory**: Ensure that all allocated memory is properly freed to avoid memory leaks.\n\n### Source Code Fix Recommendation\n\n```cpp\n#include <iostream>\n#include <cstring> // For strlen\n\nint main() {\n    const char* input = \"example\";\n    size_t len = strlen(input);\n\n    // Allocate memory with an additional byte for the null terminator\n    char* buffer = (char*)malloc(len + 1);\n    if (buffer == nullptr) {\n        std::cerr << \"Memory allocation failed\" << std::endl;\n        return 1;\n    }\n\n    // Copy input to buffer and ensure null termination\n    strncpy(buffer, input, len);\n    buffer[len] = '\\0'; // Null-terminate the string\n\n    std::cout << \"Buffer content: \" << buffer << std::endl;\n\n    // Free allocated memory\n    free(buffer);\n\n    return 0;\n}\n```\n\n### Library Dependencies\n\n- `<iostream>`: For input and output operations.\n- `<cstring>`: For string manipulation functions like `strlen` and `strncpy`.\n\n### OWASP Resources\n\n- [OWASP Top Ten](https://owasp.org/www-project-top-ten/)\n- [OWASP Secure Coding Practices](https://owasp.org/www-project-secure-coding-practices-quick-reference-guide/)\n\n### Common Weakness Enumeration (CWE)\n\n- [CWE-122: Heap-based Buffer Overflow](https://cwe.mitre.org/data/definitions/122.html)\n- [CWE-401: Missing Release of Memory after Effective Lifetime](https://cwe.mitre.org/data/definitions/401.html)"
+              },
+              "properties": {
+                "tags": [
+                  "DS161085"
+                ]
+              }
+            },
+            {
+              "id": "glog-5d5ff536-4368-4559-8e28-fbce195d31ca",
+              "help": {
+                "text": "",
+                "markdown": "## Description\n\nThe `strlen()` function in C and C++ is used to find the length of a string. However, it can lead to vulnerabilities if not used properly. The function counts the number of characters in a string until it reaches a null character (`\\0`). If the string is not null-terminated, `strlen()` will continue reading memory until it encounters a null character, potentially leading to buffer overflows, memory corruption, and other undefined behavior.\n\n## Mitigation Advice\n\nTo mitigate this vulnerability, always ensure that your strings are null-terminated. Avoid using `strlen()` on strings that may not be null-terminated. Instead, consider using safer alternatives that take the size of the buffer as an argument, such as `strnlen()`, which will not read past the specified length, even if it does not encounter a null character.\n\n## Source Code Fix Recommendation\n\nInstead of:\n\n```c++\nstrlen(database);\n```\n\nUse:\n\n```c++\nstrnlen(database, sizeof(database));\n```\n\nThis will prevent `strnlen()` from reading past the end of `database`, even if it is not null-terminated.\n\n## Library Dependencies\n\nThe `strlen()` function is part of the C standard library, so no additional libraries are needed.\n\n## References\n\n- [OWASP C/C++ Vulnerabilities](https://owasp.org/www-pdf-archive/OWASP_SCP_Quick_Reference_Guide_v2.pdf)\n- [CWE-126: Buffer Over-read](https://cwe.mitre.org/data/definitions/126.html)\n\nPlease note that the links provided are accessible to anonymous users at the time of writing this report."
+              },
+              "properties": {
+                "tags": [
+                  "DS140021"
+                ]
+              }
+            },
+            {
+              "id": "glog-c21e9880-f871-4e3e-a997-46b7cdba7285",
+              "help": {
+                "text": "",
+                "markdown": "## Description\n\nThe `strlen` function in C++ is used to find the length of a string. However, it can lead to vulnerabilities if not used properly. The function counts the number of characters in a string up to, but not including, the null-terminating character. If the string is not null-terminated, `strlen` will continue reading memory until it encounters a null byte, potentially leading to buffer overflows or other memory corruption issues.\n\n## Mitigation Advice\n\nTo mitigate this vulnerability, always ensure that strings are null-terminated before passing them to `strlen`. Additionally, consider using safer alternatives to `strlen`, such as `strnlen`, which takes a maximum length parameter and will not read past this length, even if it does not encounter a null byte.\n\n## Source Code Fix Recommendation\n\nInstead of using `strlen(\"-check-prefix=\")`, consider using `sizeof(\"-check-prefix=\") - 1`. The `sizeof` operator returns the size of the string including the null-terminating character, so subtracting 1 gives the length of the string.\n\n```cpp\nsize_t len = sizeof(\"-check-prefix=\") - 1;\n```\n\n## Library Dependencies\n\nThe `strlen` function is part of the C standard library, so no additional libraries are needed to use it.\n\n## References\n\n- [OWASP C++ Secure Coding Practices](https://cheatsheetseries.owasp.org/cheatsheets/C-Based_Toolchain_Hardening_Cheat_Sheet.html)\n- [CWE-126: Buffer Over-read](https://cwe.mitre.org/data/definitions/126.html)\n\nPlease note that the links provided are accessible to anonymous users at the time of writing this report."
+              },
+              "properties": {
+                "tags": [
+                  "DS140021"
+                ]
+              }
+            },
+            {
+              "id": "glog-e006c585-3477-44c7-8e7a-b33f2e9fa92d",
+              "help": {
+                "text": "",
+                "markdown": "## Description\n\nThe `strlen` function in C++ is used to find the length of a string. However, it can lead to vulnerabilities if not used properly. The function counts the number of characters in a string up to, but not including, the null-terminating character. If the string is not null-terminated, `strlen` will continue reading memory until it encounters a null byte, potentially leading to buffer overflows or other memory corruption issues.\n\n## Mitigation Advice\n\nTo mitigate this vulnerability, always ensure that strings are null-terminated before passing them to `strlen`. Additionally, consider using safer alternatives to `strlen`, such as `strnlen`, which takes a maximum length parameter and will not read past this length, even if it does not encounter a null byte.\n\n## Source Code Fix Recommendation\n\nInstead of using `strlen(\"-check-prefix=\")`, consider using `sizeof(\"-check-prefix=\") - 1`. The `sizeof` operator returns the size of the string including the null-terminating character, so subtracting 1 gives the length of the string.\n\n```cpp\nsize_t len = sizeof(\"-check-prefix=\") - 1;\n```\n\n## Library Dependencies\n\nThe `strlen` function is part of the C standard library, so no additional libraries are needed to use it.\n\n## References\n\n- [OWASP C++ Secure Coding Practices](https://cheatsheetseries.owasp.org/cheatsheets/C-Based_Toolchain_Hardening_Cheat_Sheet.html)\n- [CWE-126: Buffer Over-read](https://cwe.mitre.org/data/definitions/126.html)\n\nPlease note that the links provided are accessible to anonymous users at the time of writing this report."
+              },
+              "properties": {
+                "tags": [
+                  "DS140021"
+                ]
+              }
+            },
+            {
+              "id": "glog-c38395e9-e760-4a7d-91a5-27884f67091a",
+              "help": {
+                "text": "",
+                "markdown": "## Description\n\nThe `strlen` function in C++ is used to find the length of a string. However, it can lead to vulnerabilities if not used properly. The function counts the number of characters in a string up to, but not including, the null-terminating character. If the string is not null-terminated, `strlen` will continue reading memory until it encounters a null byte, potentially leading to buffer overflows or other memory corruption issues.\n\n## Mitigation Advice\n\nTo mitigate this vulnerability, always ensure that strings are null-terminated before passing them to `strlen`. Additionally, consider using safer alternatives to `strlen`, such as `strnlen`, which takes a maximum length parameter and will not read past this length, even if it does not encounter a null byte.\n\n## Source Code Fix Recommendation\n\nInstead of using `strlen(\"-check-prefix=\")`, consider using `sizeof(\"-check-prefix=\") - 1`. The `sizeof` operator returns the size of the string including the null-terminating character, so subtracting 1 gives the length of the string.\n\n```cpp\nsize_t len = sizeof(\"-check-prefix=\") - 1;\n```\n\n## Library Dependencies\n\nThe `strlen` function is part of the C standard library, so no additional libraries are needed to use it.\n\n## References\n\n- [OWASP C++ Secure Coding Practices](https://cheatsheetseries.owasp.org/cheatsheets/C-Based_Toolchain_Hardening_Cheat_Sheet.html)\n- [CWE-126: Buffer Over-read](https://cwe.mitre.org/data/definitions/126.html)\n\nPlease note that the links provided are accessible to anonymous users at the time of writing this report."
+              },
+              "properties": {
+                "tags": [
+                  "DS140021"
                 ]
               }
             }
@@ -119,95 +395,7 @@
       "language": "en-US",
       "results": [
         {
-          "ruleId": "glog-92d76e3d-9964-4358-a860-3c34fe0ed6a5",
-          "kind": "fail",
-          "level": "note",
-          "message": {
-            "text": "Detected Vulnerability in C Function (strlen)"
-          },
-          "locations": [
-            {
-              "physicalLocation": {
-                "artifactLocation": {
-                  "uri": "unittests/Basic/SourceManagerTest.cpp"
-                },
-                "region": {
-                  "startLine": 134,
-                  "startColumn": 54,
-                  "endLine": 134,
-                  "endColumn": 68,
-                  "charOffset": 4448,
-                  "charLength": 14,
-                  "snippet": {
-                    "text": "strlen(Source)",
-                    "rendered": {
-                      "text": "strlen(Source)",
-                      "markdown": "`strlen(Source)`"
-                    }
-                  },
-                  "sourceLanguage": "cpp"
-                }
-              }
-            }
-          ],
-          "fixes": [
-            {
-              "description": {
-                "text": "If a string is missing a null terminator, strlen will read past the end of the buffer"
-              },
-              "artifactChanges": [
-                {
-                  "artifactLocation": {
-                    "uri": "unittests/Basic/SourceManagerTest.cpp"
-                  },
-                  "replacements": [
-                    {
-                      "deletedRegion": {
-                        "charOffset": 4448,
-                        "charLength": 14
-                      },
-                      "insertedContent": {
-                        "text": "strlen_s(Source, <size of Source>)"
-                      }
-                    }
-                  ]
-                }
-              ]
-            },
-            {
-              "description": {
-                "text": "If a string is missing a null terminator, strlen will read past the end of the buffer"
-              },
-              "artifactChanges": [
-                {
-                  "artifactLocation": {
-                    "uri": "unittests/Basic/SourceManagerTest.cpp"
-                  },
-                  "replacements": [
-                    {
-                      "deletedRegion": {
-                        "charOffset": 4448,
-                        "charLength": 14
-                      },
-                      "insertedContent": {
-                        "text": "strnlen(Source, <size of Source>)"
-                      }
-                    }
-                  ]
-                }
-              ]
-            }
-          ],
-          "properties": {
-            "DevSkimSeverity": "BestPractice",
-            "DevSkimConfidence": "High",
-            "tags": [
-              "API.DangerousAPI.ProblematicFunction"
-            ]
-          }
-        },
-        {
-          "ruleId": "glog-5c9932e9-dc10-458b-af2c-e58a7bd80d84",
+          "ruleId": "glog-0bc6cac2-cfa7-42b9-babe-8a77557ff5c1",
           "kind": "fail",
           "level": "note",
           "message": {
@@ -217,20 +405,20 @@
             {
               "physicalLocation": {
                 "artifactLocation": {
-                  "uri": "include/clang/AST/Type.h"
+                  "uri": "include/clang/Sema/ParsedAttr.h"
                 },
                 "region": {
-                  "startLine": 5506,
-                  "startColumn": 6,
-                  "endLine": 5507,
-                  "endColumn": 29,
-                  "charOffset": 197041,
-                  "charLength": 76,
+                  "startLine": 264,
+                  "startColumn": 4,
+                  "endLine": 264,
+                  "endColumn": 52,
+                  "charOffset": 9636,
+                  "charLength": 48,
                   "snippet": {
-                    "text": "memcpy(getProtocolStorage(), protocols.data(),\n             protocols.size()",
+                    "text": "memcpy(getArgsBuffer(), &PVal, sizeof(ArgsUnion)",
                     "rendered": {
-                      "text": "memcpy(getProtocolStorage(), protocols.data(),\n             protocols.size()",
-                      "markdown": "`memcpy(getProtocolStorage(), protocols.data(),\n             protocols.size()`"
+                      "text": "memcpy(getArgsBuffer(), &PVal, sizeof(ArgsUnion)",
+                      "markdown": "`memcpy(getArgsBuffer(), &PVal, sizeof(ArgsUnion)`"
                     }
                   },
                   "sourceLanguage": "c"
@@ -246,16 +434,16 @@
               "artifactChanges": [
                 {
                   "artifactLocation": {
-                    "uri": "include/clang/AST/Type.h"
+                    "uri": "include/clang/Sema/ParsedAttr.h"
                   },
                   "replacements": [
                     {
                       "deletedRegion": {
-                        "charOffset": 197041,
-                        "charLength": 76
+                        "charOffset": 9636,
+                        "charLength": 48
                       },
                       "insertedContent": {
-                        "text": "memcpy_s(getProtocolStorage(), <size of getProtocolStorage()>,  protocols.data(), \n             protocols.size()"
+                        "text": "memcpy_s(getArgsBuffer(), <size of getArgsBuffer()>,  &PVal,  sizeof(ArgsUnion)"
                       }
                     }
                   ]
@@ -272,7 +460,137 @@
           }
         },
         {
-          "ruleId": "glog-2db537cd-366f-4b6f-a819-54ed97621068",
+          "ruleId": "glog-4e0d37a6-4af0-42db-9ba4-4119efbe76a8",
+          "kind": "fail",
+          "level": "note",
+          "message": {
+            "text": "Detected Vulnerability in C Function (memcpy)"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "include/clang/Analysis/Analyses/ThreadSafetyUtil.h"
+                },
+                "region": {
+                  "startLine": 119,
+                  "startColumn": 4,
+                  "endLine": 119,
+                  "endColumn": 33,
+                  "charOffset": 3115,
+                  "charLength": 29,
+                  "snippet": {
+                    "text": "memcpy(Data, Odata, sizeof(T)",
+                    "rendered": {
+                      "text": "memcpy(Data, Odata, sizeof(T)",
+                      "markdown": "`memcpy(Data, Odata, sizeof(T)`"
+                    }
+                  },
+                  "sourceLanguage": "c"
+                }
+              }
+            }
+          ],
+          "fixes": [
+            {
+              "description": {
+                "text": "There are a number of conditions in which memcpy can introduce a vulnerability (mismatched buffer sizes, null pointers, etc.). More secure alternitives perform additional validation of the source and destination buffer"
+              },
+              "artifactChanges": [
+                {
+                  "artifactLocation": {
+                    "uri": "include/clang/Analysis/Analyses/ThreadSafetyUtil.h"
+                  },
+                  "replacements": [
+                    {
+                      "deletedRegion": {
+                        "charOffset": 3115,
+                        "charLength": 29
+                      },
+                      "insertedContent": {
+                        "text": "memcpy_s(Data, <size of Data>,  Odata,  sizeof(T)"
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "properties": {
+            "DevSkimSeverity": "BestPractice",
+            "DevSkimConfidence": "High",
+            "tags": [
+              "API.DangerousAPI.ProblematicFunction"
+            ]
+          }
+        },
+        {
+          "ruleId": "glog-e8e2648d-7a0e-4d26-bb6d-7a02400bf8df",
+          "kind": "fail",
+          "level": "note",
+          "message": {
+            "text": "Detected Vulnerability in C Function (memcpy)"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "include/clang/Analysis/Support/BumpVector.h"
+                },
+                "region": {
+                  "startLine": 243,
+                  "startColumn": 6,
+                  "endLine": 243,
+                  "endColumn": 48,
+                  "charOffset": 6641,
+                  "charLength": 42,
+                  "snippet": {
+                    "text": "memcpy(NewElts, Begin, CurSize * sizeof(T)",
+                    "rendered": {
+                      "text": "memcpy(NewElts, Begin, CurSize * sizeof(T)",
+                      "markdown": "`memcpy(NewElts, Begin, CurSize * sizeof(T)`"
+                    }
+                  },
+                  "sourceLanguage": "c"
+                }
+              }
+            }
+          ],
+          "fixes": [
+            {
+              "description": {
+                "text": "There are a number of conditions in which memcpy can introduce a vulnerability (mismatched buffer sizes, null pointers, etc.). More secure alternitives perform additional validation of the source and destination buffer"
+              },
+              "artifactChanges": [
+                {
+                  "artifactLocation": {
+                    "uri": "include/clang/Analysis/Support/BumpVector.h"
+                  },
+                  "replacements": [
+                    {
+                      "deletedRegion": {
+                        "charOffset": 6641,
+                        "charLength": 42
+                      },
+                      "insertedContent": {
+                        "text": "memcpy_s(NewElts, <size of NewElts>,  Begin,  CurSize * sizeof(T)"
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "properties": {
+            "DevSkimSeverity": "BestPractice",
+            "DevSkimConfidence": "High",
+            "tags": [
+              "API.DangerousAPI.ProblematicFunction"
+            ]
+          }
+        },
+        {
+          "ruleId": "glog-398e5bf5-663d-4325-b06c-3c87e33f12b6",
           "kind": "fail",
           "level": "note",
           "message": {
@@ -337,73 +655,33 @@
           }
         },
         {
-          "ruleId": "glog-49d5f0b7-a067-420d-9b27-23b24ae34c44",
-          "kind": "fail",
-          "level": "error",
-          "message": {
-            "text": "Avoid Storing Tokens or Keys in Source Code Vulnerability"
-          },
-          "locations": [
-            {
-              "physicalLocation": {
-                "artifactLocation": {
-                  "uri": "unittests/Format/FormatTest.cpp"
-                },
-                "region": {
-                  "startLine": 14009,
-                  "startColumn": 15,
-                  "endLine": 14009,
-                  "endColumn": 79,
-                  "charOffset": 533251,
-                  "charLength": 64,
-                  "snippet": {
-                    "text": "\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\"",
-                    "rendered": {
-                      "text": "\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\"",
-                      "markdown": "`\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\"`"
-                    }
-                  },
-                  "sourceLanguage": "cpp"
-                }
-              }
-            }
-          ],
-          "properties": {
-            "DevSkimSeverity": "Important",
-            "DevSkimConfidence": "Medium",
-            "tags": [
-              "Implementation.Privacy.Token"
-            ]
-          }
-        },
-        {
-          "ruleId": "glog-f3a992cc-e2c8-4220-95a7-cd8265e43b2f",
+          "ruleId": "glog-af11e98b-e8b7-4def-bb0e-de433248546c",
           "kind": "fail",
           "level": "note",
           "message": {
-            "text": "Detected Vulnerability in C Function (strlen)"
+            "text": "Detected Vulnerability in C Function (memcpy)"
           },
           "locations": [
             {
               "physicalLocation": {
                 "artifactLocation": {
-                  "uri": "unittests/Basic/SourceManagerTest.cpp"
+                  "uri": "include/clang/Sema/ParsedAttr.h"
                 },
                 "region": {
-                  "startLine": 139,
-                  "startColumn": 40,
-                  "endLine": 139,
-                  "endColumn": 54,
-                  "charOffset": 4602,
-                  "charLength": 14,
+                  "startLine": 212,
+                  "startColumn": 6,
+                  "endLine": 212,
+                  "endColumn": 63,
+                  "charOffset": 7021,
+                  "charLength": 57,
                   "snippet": {
-                    "text": "strlen(Source)",
+                    "text": "memcpy(getArgsBuffer(), args, numArgs * sizeof(ArgsUnion)",
                     "rendered": {
-                      "text": "strlen(Source)",
-                      "markdown": "`strlen(Source)`"
+                      "text": "memcpy(getArgsBuffer(), args, numArgs * sizeof(ArgsUnion)",
+                      "markdown": "`memcpy(getArgsBuffer(), args, numArgs * sizeof(ArgsUnion)`"
                     }
                   },
-                  "sourceLanguage": "cpp"
+                  "sourceLanguage": "c"
                 }
               }
             }
@@ -411,44 +689,21 @@
           "fixes": [
             {
               "description": {
-                "text": "If a string is missing a null terminator, strlen will read past the end of the buffer"
+                "text": "There are a number of conditions in which memcpy can introduce a vulnerability (mismatched buffer sizes, null pointers, etc.). More secure alternitives perform additional validation of the source and destination buffer"
               },
               "artifactChanges": [
                 {
                   "artifactLocation": {
-                    "uri": "unittests/Basic/SourceManagerTest.cpp"
+                    "uri": "include/clang/Sema/ParsedAttr.h"
                   },
                   "replacements": [
                     {
                       "deletedRegion": {
-                        "charOffset": 4602,
-                        "charLength": 14
+                        "charOffset": 7021,
+                        "charLength": 57
                       },
                       "insertedContent": {
-                        "text": "strlen_s(Source, <size of Source>)"
-                      }
-                    }
-                  ]
-                }
-              ]
-            },
-            {
-              "description": {
-                "text": "If a string is missing a null terminator, strlen will read past the end of the buffer"
-              },
-              "artifactChanges": [
-                {
-                  "artifactLocation": {
-                    "uri": "unittests/Basic/SourceManagerTest.cpp"
-                  },
-                  "replacements": [
-                    {
-                      "deletedRegion": {
-                        "charOffset": 4602,
-                        "charLength": 14
-                      },
-                      "insertedContent": {
-                        "text": "strnlen(Source, <size of Source>)"
+                        "text": "memcpy_s(getArgsBuffer(), <size of getArgsBuffer()>,  args,  numArgs * sizeof(ArgsUnion)"
                       }
                     }
                   ]
@@ -465,33 +720,33 @@
           }
         },
         {
-          "ruleId": "glog-7d2781c0-12a6-4f07-a84c-3541eb06ef9c",
+          "ruleId": "glog-04136682-f6b2-465c-8502-188db67e0ec8",
           "kind": "fail",
           "level": "note",
           "message": {
-            "text": "Detected Vulnerability in C Function (strlen)"
+            "text": "Detected Vulnerability in C Function (memcpy)"
           },
           "locations": [
             {
               "physicalLocation": {
                 "artifactLocation": {
-                  "uri": "unittests/Format/FormatTestJS.cpp"
+                  "uri": "include/clang/Sema/ParsedAttr.h"
                 },
                 "region": {
-                  "startLine": 1442,
-                  "startColumn": 20,
-                  "endLine": 1442,
-                  "endColumn": 68,
-                  "charOffset": 49021,
+                  "startLine": 230,
+                  "startColumn": 4,
+                  "endLine": 230,
+                  "endColumn": 52,
+                  "charOffset": 8013,
                   "charLength": 48,
                   "snippet": {
-                    "text": "strlen(\"nearlyLooks  +   like +   ts + code;  \")",
+                    "text": "memcpy(getArgsBuffer(), &PVal, sizeof(ArgsUnion)",
                     "rendered": {
-                      "text": "strlen(\"nearlyLooks  +   like +   ts + code;  \")",
-                      "markdown": "`strlen(\"nearlyLooks  +   like +   ts + code;  \")`"
+                      "text": "memcpy(getArgsBuffer(), &PVal, sizeof(ArgsUnion)",
+                      "markdown": "`memcpy(getArgsBuffer(), &PVal, sizeof(ArgsUnion)`"
                     }
                   },
-                  "sourceLanguage": "cpp"
+                  "sourceLanguage": "c"
                 }
               }
             }
@@ -499,44 +754,21 @@
           "fixes": [
             {
               "description": {
-                "text": "If a string is missing a null terminator, strlen will read past the end of the buffer"
+                "text": "There are a number of conditions in which memcpy can introduce a vulnerability (mismatched buffer sizes, null pointers, etc.). More secure alternitives perform additional validation of the source and destination buffer"
               },
               "artifactChanges": [
                 {
                   "artifactLocation": {
-                    "uri": "unittests/Format/FormatTestJS.cpp"
+                    "uri": "include/clang/Sema/ParsedAttr.h"
                   },
                   "replacements": [
                     {
                       "deletedRegion": {
-                        "charOffset": 49021,
+                        "charOffset": 8013,
                         "charLength": 48
                       },
                       "insertedContent": {
-                        "text": "strlen_s(\"nearlyLooks  +   like +   ts + code;  \", <size of \"nearlyLooks  +   like +   ts + code;  \">)"
-                      }
-                    }
-                  ]
-                }
-              ]
-            },
-            {
-              "description": {
-                "text": "If a string is missing a null terminator, strlen will read past the end of the buffer"
-              },
-              "artifactChanges": [
-                {
-                  "artifactLocation": {
-                    "uri": "unittests/Format/FormatTestJS.cpp"
-                  },
-                  "replacements": [
-                    {
-                      "deletedRegion": {
-                        "charOffset": 49021,
-                        "charLength": 48
-                      },
-                      "insertedContent": {
-                        "text": "strnlen(\"nearlyLooks  +   like +   ts + code;  \", <size of \"nearlyLooks  +   like +   ts + code;  \">)"
+                        "text": "memcpy_s(getArgsBuffer(), <size of getArgsBuffer()>,  &PVal,  sizeof(ArgsUnion)"
                       }
                     }
                   ]
@@ -553,70 +785,355 @@
           }
         },
         {
-          "ruleId": "glog-36e629c2-0b83-4a20-b2ad-6271e3eb8488",
+          "ruleId": "glog-45779b48-5fbf-4714-990f-e829cb25126b",
           "kind": "fail",
-          "level": "error",
+          "level": "note",
           "message": {
-            "text": "Avoid Storing Tokens or Keys in Source Code Vulnerability"
+            "text": "Detected Vulnerability in C Function (memcpy)"
           },
           "locations": [
             {
               "physicalLocation": {
                 "artifactLocation": {
-                  "uri": "unittests/Format/FormatTest.cpp"
+                  "uri": "include/clang/AST/TypeLoc.h"
                 },
                 "region": {
-                  "startLine": 13998,
-                  "startColumn": 15,
-                  "endLine": 13998,
-                  "endColumn": 80,
-                  "charOffset": 532747,
-                  "charLength": 65,
+                  "startLine": 2184,
+                  "startColumn": 4,
+                  "endLine": 2184,
+                  "endColumn": 32,
+                  "charOffset": 65249,
+                  "charLength": 28,
                   "snippet": {
-                    "text": "\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\"",
+                    "text": "memcpy(Data, Loc.Data, size)",
                     "rendered": {
-                      "text": "\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\"",
-                      "markdown": "`\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\"`"
+                      "text": "memcpy(Data, Loc.Data, size)",
+                      "markdown": "`memcpy(Data, Loc.Data, size)`"
                     }
                   },
-                  "sourceLanguage": "cpp"
+                  "sourceLanguage": "c"
                 }
               }
             }
           ],
+          "fixes": [
+            {
+              "description": {
+                "text": "There are a number of conditions in which memcpy can introduce a vulnerability (mismatched buffer sizes, null pointers, etc.). More secure alternitives perform additional validation of the source and destination buffer"
+              },
+              "artifactChanges": [
+                {
+                  "artifactLocation": {
+                    "uri": "include/clang/AST/TypeLoc.h"
+                  },
+                  "replacements": [
+                    {
+                      "deletedRegion": {
+                        "charOffset": 65249,
+                        "charLength": 28
+                      },
+                      "insertedContent": {
+                        "text": "memcpy_s(Data, <size of Data>,  Loc.Data,  size)"
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
           "properties": {
-            "DevSkimSeverity": "Important",
-            "DevSkimConfidence": "Medium",
+            "DevSkimSeverity": "BestPractice",
+            "DevSkimConfidence": "High",
             "tags": [
-              "Implementation.Privacy.Token"
+              "API.DangerousAPI.ProblematicFunction"
             ]
           }
         },
         {
-          "ruleId": "glog-1bb74172-0a5e-4872-bed8-771552dce9a7",
+          "ruleId": "glog-d1b8ea6c-9941-4b4d-bab6-1cfcf93ce478",
           "kind": "fail",
-          "level": "error",
+          "level": "note",
           "message": {
-            "text": "Avoid Storing Tokens or Keys in Source Code Vulnerability"
+            "text": "Detected Vulnerability in C Function (memcpy)"
           },
           "locations": [
             {
               "physicalLocation": {
                 "artifactLocation": {
-                  "uri": "unittests/Format/FormatTest.cpp"
+                  "uri": "include/clang/AST/TypeLoc.h"
                 },
                 "region": {
-                  "startLine": 14007,
-                  "startColumn": 15,
-                  "endLine": 14007,
-                  "endColumn": 79,
-                  "charOffset": 533133,
-                  "charLength": 64,
+                  "startLine": 2071,
+                  "startColumn": 4,
+                  "endLine": 2071,
+                  "endColumn": 32,
+                  "charOffset": 61751,
+                  "charLength": 28,
                   "snippet": {
-                    "text": "\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\"",
+                    "text": "memcpy(Data, Loc.Data, size)",
                     "rendered": {
-                      "text": "\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\"",
-                      "markdown": "`\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\"`"
+                      "text": "memcpy(Data, Loc.Data, size)",
+                      "markdown": "`memcpy(Data, Loc.Data, size)`"
+                    }
+                  },
+                  "sourceLanguage": "c"
+                }
+              }
+            }
+          ],
+          "fixes": [
+            {
+              "description": {
+                "text": "There are a number of conditions in which memcpy can introduce a vulnerability (mismatched buffer sizes, null pointers, etc.). More secure alternitives perform additional validation of the source and destination buffer"
+              },
+              "artifactChanges": [
+                {
+                  "artifactLocation": {
+                    "uri": "include/clang/AST/TypeLoc.h"
+                  },
+                  "replacements": [
+                    {
+                      "deletedRegion": {
+                        "charOffset": 61751,
+                        "charLength": 28
+                      },
+                      "insertedContent": {
+                        "text": "memcpy_s(Data, <size of Data>,  Loc.Data,  size)"
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "properties": {
+            "DevSkimSeverity": "BestPractice",
+            "DevSkimConfidence": "High",
+            "tags": [
+              "API.DangerousAPI.ProblematicFunction"
+            ]
+          }
+        },
+        {
+          "ruleId": "glog-219182b1-6df6-4bcb-ad90-db0ff7afa823",
+          "kind": "fail",
+          "level": "note",
+          "message": {
+            "text": "Detected Vulnerability in C Function (memcpy)"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "include/clang/AST/TypeLoc.h"
+                },
+                "region": {
+                  "startLine": 1648,
+                  "startColumn": 4,
+                  "endLine": 1648,
+                  "endColumn": 32,
+                  "charOffset": 48175,
+                  "charLength": 28,
+                  "snippet": {
+                    "text": "memcpy(Data, Loc.Data, size)",
+                    "rendered": {
+                      "text": "memcpy(Data, Loc.Data, size)",
+                      "markdown": "`memcpy(Data, Loc.Data, size)`"
+                    }
+                  },
+                  "sourceLanguage": "c"
+                }
+              }
+            }
+          ],
+          "fixes": [
+            {
+              "description": {
+                "text": "There are a number of conditions in which memcpy can introduce a vulnerability (mismatched buffer sizes, null pointers, etc.). More secure alternitives perform additional validation of the source and destination buffer"
+              },
+              "artifactChanges": [
+                {
+                  "artifactLocation": {
+                    "uri": "include/clang/AST/TypeLoc.h"
+                  },
+                  "replacements": [
+                    {
+                      "deletedRegion": {
+                        "charOffset": 48175,
+                        "charLength": 28
+                      },
+                      "insertedContent": {
+                        "text": "memcpy_s(Data, <size of Data>,  Loc.Data,  size)"
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "properties": {
+            "DevSkimSeverity": "BestPractice",
+            "DevSkimConfidence": "High",
+            "tags": [
+              "API.DangerousAPI.ProblematicFunction"
+            ]
+          }
+        },
+        {
+          "ruleId": "glog-0e19cbbe-4f6d-4609-9975-6fa0f1265c4e",
+          "kind": "fail",
+          "level": "note",
+          "message": {
+            "text": "Detected Vulnerability in C Function (memcpy)"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "include/clang/AST/TypeLoc.h"
+                },
+                "region": {
+                  "startLine": 2018,
+                  "startColumn": 4,
+                  "endLine": 2018,
+                  "endColumn": 32,
+                  "charOffset": 59969,
+                  "charLength": 28,
+                  "snippet": {
+                    "text": "memcpy(Data, Loc.Data, size)",
+                    "rendered": {
+                      "text": "memcpy(Data, Loc.Data, size)",
+                      "markdown": "`memcpy(Data, Loc.Data, size)`"
+                    }
+                  },
+                  "sourceLanguage": "c"
+                }
+              }
+            }
+          ],
+          "fixes": [
+            {
+              "description": {
+                "text": "There are a number of conditions in which memcpy can introduce a vulnerability (mismatched buffer sizes, null pointers, etc.). More secure alternitives perform additional validation of the source and destination buffer"
+              },
+              "artifactChanges": [
+                {
+                  "artifactLocation": {
+                    "uri": "include/clang/AST/TypeLoc.h"
+                  },
+                  "replacements": [
+                    {
+                      "deletedRegion": {
+                        "charOffset": 59969,
+                        "charLength": 28
+                      },
+                      "insertedContent": {
+                        "text": "memcpy_s(Data, <size of Data>,  Loc.Data,  size)"
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "properties": {
+            "DevSkimSeverity": "BestPractice",
+            "DevSkimConfidence": "High",
+            "tags": [
+              "API.DangerousAPI.ProblematicFunction"
+            ]
+          }
+        },
+        {
+          "ruleId": "glog-7427fe4a-b327-4c51-afae-3a4ca51a4c95",
+          "kind": "fail",
+          "level": "note",
+          "message": {
+            "text": "Detected Vulnerability in C Function (memcpy)"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "include/clang/AST/TypeLoc.h"
+                },
+                "region": {
+                  "startLine": 397,
+                  "startColumn": 4,
+                  "endLine": 398,
+                  "endColumn": 22,
+                  "charOffset": 12223,
+                  "charLength": 77,
+                  "snippet": {
+                    "text": "memcpy(getExtraLocalData(), other.getExtraLocalData(),\n           asDerived()",
+                    "rendered": {
+                      "text": "memcpy(getExtraLocalData(), other.getExtraLocalData(),\n           asDerived()",
+                      "markdown": "`memcpy(getExtraLocalData(), other.getExtraLocalData(),\n           asDerived()`"
+                    }
+                  },
+                  "sourceLanguage": "c"
+                }
+              }
+            }
+          ],
+          "fixes": [
+            {
+              "description": {
+                "text": "There are a number of conditions in which memcpy can introduce a vulnerability (mismatched buffer sizes, null pointers, etc.). More secure alternitives perform additional validation of the source and destination buffer"
+              },
+              "artifactChanges": [
+                {
+                  "artifactLocation": {
+                    "uri": "include/clang/AST/TypeLoc.h"
+                  },
+                  "replacements": [
+                    {
+                      "deletedRegion": {
+                        "charOffset": 12223,
+                        "charLength": 77
+                      },
+                      "insertedContent": {
+                        "text": "memcpy_s(getExtraLocalData(), <size of getExtraLocalData()>,  other.getExtraLocalData(), \n           asDerived()"
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "properties": {
+            "DevSkimSeverity": "BestPractice",
+            "DevSkimConfidence": "High",
+            "tags": [
+              "API.DangerousAPI.ProblematicFunction"
+            ]
+          }
+        },
+        {
+          "ruleId": "glog-10b90d54-56f8-4c62-a13f-a9cc3a3a3be4",
+          "kind": "fail",
+          "level": "note",
+          "message": {
+            "text": "Detected Vulnerability in C Function (memcpy)"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "utils/TableGen/ClangAttrEmitter.cpp"
+                },
+                "region": {
+                  "startLine": 419,
+                  "startColumn": 26,
+                  "endLine": 420,
+                  "endColumn": 41,
+                  "charOffset": 15498,
+                  "charLength": 94,
+                  "snippet": {
+                    "text": "memcpy(\" << getLowerName() << \", \" << getUpperName()\n         << \".data(), \" << getLowerName()",
+                    "rendered": {
+                      "text": "memcpy(\" << getLowerName() << \", \" << getUpperName()\n         << \".data(), \" << getLowerName()",
+                      "markdown": "`memcpy(\" << getLowerName() << \", \" << getUpperName()\n         << \".data(), \" << getLowerName()`"
                     }
                   },
                   "sourceLanguage": "cpp"
@@ -624,11 +1141,1524 @@
               }
             }
           ],
+          "fixes": [
+            {
+              "description": {
+                "text": "There are a number of conditions in which memcpy can introduce a vulnerability (mismatched buffer sizes, null pointers, etc.). More secure alternitives perform additional validation of the source and destination buffer"
+              },
+              "artifactChanges": [
+                {
+                  "artifactLocation": {
+                    "uri": "utils/TableGen/ClangAttrEmitter.cpp"
+                  },
+                  "replacements": [
+                    {
+                      "deletedRegion": {
+                        "charOffset": 15498,
+                        "charLength": 94
+                      },
+                      "insertedContent": {
+                        "text": "memcpy_s(\" << getLowerName() << \", <size of \" << getLowerName() << \">,  \" << getUpperName()\n         << \".data(),  \" << getLowerName()"
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
           "properties": {
-            "DevSkimSeverity": "Important",
-            "DevSkimConfidence": "Medium",
+            "DevSkimSeverity": "BestPractice",
+            "DevSkimConfidence": "High",
             "tags": [
-              "Implementation.Privacy.Token"
+              "API.DangerousAPI.ProblematicFunction"
+            ]
+          }
+        },
+        {
+          "ruleId": "glog-68375fa9-76b9-4a7b-a9e6-4f14995e39d9",
+          "kind": "fail",
+          "level": "note",
+          "message": {
+            "text": "Detected Vulnerability in C Function (memcpy)"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "include/clang/AST/TypeLoc.h"
+                },
+                "region": {
+                  "startLine": 392,
+                  "startColumn": 4,
+                  "endLine": 392,
+                  "endColumn": 66,
+                  "charOffset": 11977,
+                  "charLength": 62,
+                  "snippet": {
+                    "text": "memcpy(getLocalData(), other.getLocalData(), sizeof(LocalData)",
+                    "rendered": {
+                      "text": "memcpy(getLocalData(), other.getLocalData(), sizeof(LocalData)",
+                      "markdown": "`memcpy(getLocalData(), other.getLocalData(), sizeof(LocalData)`"
+                    }
+                  },
+                  "sourceLanguage": "c"
+                }
+              }
+            }
+          ],
+          "fixes": [
+            {
+              "description": {
+                "text": "There are a number of conditions in which memcpy can introduce a vulnerability (mismatched buffer sizes, null pointers, etc.). More secure alternitives perform additional validation of the source and destination buffer"
+              },
+              "artifactChanges": [
+                {
+                  "artifactLocation": {
+                    "uri": "include/clang/AST/TypeLoc.h"
+                  },
+                  "replacements": [
+                    {
+                      "deletedRegion": {
+                        "charOffset": 11977,
+                        "charLength": 62
+                      },
+                      "insertedContent": {
+                        "text": "memcpy_s(getLocalData(), <size of getLocalData()>,  other.getLocalData(),  sizeof(LocalData)"
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "properties": {
+            "DevSkimSeverity": "BestPractice",
+            "DevSkimConfidence": "High",
+            "tags": [
+              "API.DangerousAPI.ProblematicFunction"
+            ]
+          }
+        },
+        {
+          "ruleId": "glog-688f8c1b-d4e4-4aa4-a88f-dd188d280935",
+          "kind": "fail",
+          "level": "note",
+          "message": {
+            "text": "Detected Vulnerability in C Function (memcpy)"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "utils/TableGen/ClangAttrEmitter.cpp"
+                },
+                "region": {
+                  "startLine": 404,
+                  "startColumn": 24,
+                  "endLine": 405,
+                  "endColumn": 26,
+                  "charOffset": 14993,
+                  "charLength": 77,
+                  "snippet": {
+                    "text": "memcpy(this->\" << getLowerName() << \", S.data(), \"\n         << getLowerName()",
+                    "rendered": {
+                      "text": "memcpy(this->\" << getLowerName() << \", S.data(), \"\n         << getLowerName()",
+                      "markdown": "`memcpy(this->\" << getLowerName() << \", S.data(), \"\n         << getLowerName()`"
+                    }
+                  },
+                  "sourceLanguage": "cpp"
+                }
+              }
+            }
+          ],
+          "fixes": [
+            {
+              "description": {
+                "text": "There are a number of conditions in which memcpy can introduce a vulnerability (mismatched buffer sizes, null pointers, etc.). More secure alternitives perform additional validation of the source and destination buffer"
+              },
+              "artifactChanges": [
+                {
+                  "artifactLocation": {
+                    "uri": "utils/TableGen/ClangAttrEmitter.cpp"
+                  },
+                  "replacements": [
+                    {
+                      "deletedRegion": {
+                        "charOffset": 14993,
+                        "charLength": 77
+                      },
+                      "insertedContent": {
+                        "text": "memcpy_s(this->\" << getLowerName() << \", <size of this->\" << getLowerName() << \">,  S.data(),  \"\n         << getLowerName()"
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "properties": {
+            "DevSkimSeverity": "BestPractice",
+            "DevSkimConfidence": "High",
+            "tags": [
+              "API.DangerousAPI.ProblematicFunction"
+            ]
+          }
+        },
+        {
+          "ruleId": "glog-14be4a90-1301-454f-acc6-b89d63112ab9",
+          "kind": "fail",
+          "level": "note",
+          "message": {
+            "text": "Detected Vulnerability in C Function (memcpy)"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "utils/TableGen/ClangAttrEmitter.cpp"
+                },
+                "region": {
+                  "startLine": 1206,
+                  "startColumn": 26,
+                  "endLine": 1206,
+                  "endColumn": 60,
+                  "charOffset": 44860,
+                  "charLength": 34,
+                  "snippet": {
+                    "text": "memcpy(Mem, Ref.data(), Ref.size()",
+                    "rendered": {
+                      "text": "memcpy(Mem, Ref.data(), Ref.size()",
+                      "markdown": "`memcpy(Mem, Ref.data(), Ref.size()`"
+                    }
+                  },
+                  "sourceLanguage": "cpp"
+                }
+              }
+            }
+          ],
+          "fixes": [
+            {
+              "description": {
+                "text": "There are a number of conditions in which memcpy can introduce a vulnerability (mismatched buffer sizes, null pointers, etc.). More secure alternitives perform additional validation of the source and destination buffer"
+              },
+              "artifactChanges": [
+                {
+                  "artifactLocation": {
+                    "uri": "utils/TableGen/ClangAttrEmitter.cpp"
+                  },
+                  "replacements": [
+                    {
+                      "deletedRegion": {
+                        "charOffset": 44860,
+                        "charLength": 34
+                      },
+                      "insertedContent": {
+                        "text": "memcpy_s(Mem, <size of Mem>,  Ref.data(),  Ref.size()"
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "properties": {
+            "DevSkimSeverity": "BestPractice",
+            "DevSkimConfidence": "High",
+            "tags": [
+              "API.DangerousAPI.ProblematicFunction"
+            ]
+          }
+        },
+        {
+          "ruleId": "glog-751e3879-9ae0-401b-9a3d-be6e3d43c74d",
+          "kind": "fail",
+          "level": "note",
+          "message": {
+            "text": "Detected Vulnerability in C Function (strlen)"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "tools/driver/driver.cpp"
+                },
+                "region": {
+                  "startLine": 193,
+                  "startColumn": 16,
+                  "endLine": 193,
+                  "endColumn": 25,
+                  "charOffset": 7116,
+                  "charLength": 9,
+                  "snippet": {
+                    "text": "strlen(S)",
+                    "rendered": {
+                      "text": "strlen(S)",
+                      "markdown": "`strlen(S)`"
+                    }
+                  },
+                  "sourceLanguage": "cpp"
+                }
+              }
+            }
+          ],
+          "fixes": [
+            {
+              "description": {
+                "text": "If a string is missing a null terminator, strlen will read past the end of the buffer"
+              },
+              "artifactChanges": [
+                {
+                  "artifactLocation": {
+                    "uri": "tools/driver/driver.cpp"
+                  },
+                  "replacements": [
+                    {
+                      "deletedRegion": {
+                        "charOffset": 7116,
+                        "charLength": 9
+                      },
+                      "insertedContent": {
+                        "text": "strlen_s(S, <size of S>)"
+                      }
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "description": {
+                "text": "If a string is missing a null terminator, strlen will read past the end of the buffer"
+              },
+              "artifactChanges": [
+                {
+                  "artifactLocation": {
+                    "uri": "tools/driver/driver.cpp"
+                  },
+                  "replacements": [
+                    {
+                      "deletedRegion": {
+                        "charOffset": 7116,
+                        "charLength": 9
+                      },
+                      "insertedContent": {
+                        "text": "strnlen(S, <size of S>)"
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "properties": {
+            "DevSkimSeverity": "BestPractice",
+            "DevSkimConfidence": "High",
+            "tags": [
+              "API.DangerousAPI.ProblematicFunction"
+            ]
+          }
+        },
+        {
+          "ruleId": "glog-e804b128-139d-410d-9636-c44ba15a4abe",
+          "kind": "fail",
+          "level": "error",
+          "message": {
+            "text": "\"Vulnerable/Compromised Hash Algorithm\""
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "tools/driver/cc1gen_reproducer_main.cpp"
+                },
+                "region": {
+                  "startLine": 55,
+                  "startColumn": 20,
+                  "endLine": 55,
+                  "endColumn": 23,
+                  "charOffset": 1659,
+                  "charLength": 3,
+                  "snippet": {
+                    "text": "md5",
+                    "rendered": {
+                      "text": "md5",
+                      "markdown": "`md5`"
+                    }
+                  },
+                  "sourceLanguage": "cpp"
+                }
+              }
+            }
+          ],
+          "fixes": [
+            {
+              "description": {
+                "text": "A weak or broken hash algorithm was detected."
+              },
+              "artifactChanges": [
+                {
+                  "artifactLocation": {
+                    "uri": "tools/driver/cc1gen_reproducer_main.cpp"
+                  },
+                  "replacements": [
+                    {
+                      "deletedRegion": {
+                        "charOffset": 1659,
+                        "charLength": 3
+                      },
+                      "insertedContent": {
+                        "text": "sha512"
+                      }
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "description": {
+                "text": "A weak or broken hash algorithm was detected."
+              },
+              "artifactChanges": [
+                {
+                  "artifactLocation": {
+                    "uri": "tools/driver/cc1gen_reproducer_main.cpp"
+                  },
+                  "replacements": [
+                    {
+                      "deletedRegion": {
+                        "charOffset": 1659,
+                        "charLength": 3
+                      },
+                      "insertedContent": {
+                        "text": "sha256"
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "properties": {
+            "DevSkimSeverity": "Critical",
+            "DevSkimConfidence": "High",
+            "tags": [
+              "Cryptography.BannedHashAlgorithm"
+            ]
+          }
+        },
+        {
+          "ruleId": "glog-1ed9acee-45a0-46df-aae8-72241383e691",
+          "kind": "fail",
+          "level": "error",
+          "message": {
+            "text": "\"Vulnerable/Compromised Hash Algorithm\""
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "tools/driver/cc1gen_reproducer_main.cpp"
+                },
+                "region": {
+                  "startLine": 55,
+                  "startColumn": 31,
+                  "endLine": 55,
+                  "endColumn": 34,
+                  "charOffset": 1670,
+                  "charLength": 3,
+                  "snippet": {
+                    "text": "MD5",
+                    "rendered": {
+                      "text": "MD5",
+                      "markdown": "`MD5`"
+                    }
+                  },
+                  "sourceLanguage": "cpp"
+                }
+              }
+            }
+          ],
+          "fixes": [
+            {
+              "description": {
+                "text": "A weak or broken hash algorithm was detected."
+              },
+              "artifactChanges": [
+                {
+                  "artifactLocation": {
+                    "uri": "tools/driver/cc1gen_reproducer_main.cpp"
+                  },
+                  "replacements": [
+                    {
+                      "deletedRegion": {
+                        "charOffset": 1670,
+                        "charLength": 3
+                      },
+                      "insertedContent": {
+                        "text": "SHA256"
+                      }
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "description": {
+                "text": "A weak or broken hash algorithm was detected."
+              },
+              "artifactChanges": [
+                {
+                  "artifactLocation": {
+                    "uri": "tools/driver/cc1gen_reproducer_main.cpp"
+                  },
+                  "replacements": [
+                    {
+                      "deletedRegion": {
+                        "charOffset": 1670,
+                        "charLength": 3
+                      },
+                      "insertedContent": {
+                        "text": "SHA512"
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "properties": {
+            "DevSkimSeverity": "Critical",
+            "DevSkimConfidence": "High",
+            "tags": [
+              "Cryptography.BannedHashAlgorithm"
+            ]
+          }
+        },
+        {
+          "ruleId": "glog-2c789bcd-0ba6-4f84-a3ae-8cc132dec086",
+          "kind": "fail",
+          "level": "error",
+          "message": {
+            "text": "\"Vulnerable/Compromised Hash Algorithm\""
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "tools/driver/cc1gen_reproducer_main.cpp"
+                },
+                "region": {
+                  "startLine": 32,
+                  "startColumn": 14,
+                  "endLine": 32,
+                  "endColumn": 17,
+                  "charOffset": 1093,
+                  "charLength": 3,
+                  "snippet": {
+                    "text": "MD5",
+                    "rendered": {
+                      "text": "MD5",
+                      "markdown": "`MD5`"
+                    }
+                  },
+                  "sourceLanguage": "cpp"
+                }
+              }
+            }
+          ],
+          "fixes": [
+            {
+              "description": {
+                "text": "A weak or broken hash algorithm was detected."
+              },
+              "artifactChanges": [
+                {
+                  "artifactLocation": {
+                    "uri": "tools/driver/cc1gen_reproducer_main.cpp"
+                  },
+                  "replacements": [
+                    {
+                      "deletedRegion": {
+                        "charOffset": 1093,
+                        "charLength": 3
+                      },
+                      "insertedContent": {
+                        "text": "SHA256"
+                      }
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "description": {
+                "text": "A weak or broken hash algorithm was detected."
+              },
+              "artifactChanges": [
+                {
+                  "artifactLocation": {
+                    "uri": "tools/driver/cc1gen_reproducer_main.cpp"
+                  },
+                  "replacements": [
+                    {
+                      "deletedRegion": {
+                        "charOffset": 1093,
+                        "charLength": 3
+                      },
+                      "insertedContent": {
+                        "text": "SHA512"
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "properties": {
+            "DevSkimSeverity": "Critical",
+            "DevSkimConfidence": "High",
+            "tags": [
+              "Cryptography.BannedHashAlgorithm"
+            ]
+          }
+        },
+        {
+          "ruleId": "glog-57b499fd-f5c8-4de5-9fcb-a68462ed82cb",
+          "kind": "fail",
+          "level": "note",
+          "message": {
+            "text": "Detected Vulnerability in C Function (strlen)"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "tools/c-index-test/c-index-test.c"
+                },
+                "region": {
+                  "startLine": 4388,
+                  "startColumn": 19,
+                  "endLine": 4388,
+                  "endColumn": 31,
+                  "charOffset": 143053,
+                  "charLength": 12,
+                  "snippet": {
+                    "text": "strlen(kind)",
+                    "rendered": {
+                      "text": "strlen(kind)",
+                      "markdown": "`strlen(kind)`"
+                    }
+                  },
+                  "sourceLanguage": "c"
+                }
+              }
+            }
+          ],
+          "fixes": [
+            {
+              "description": {
+                "text": "If a string is missing a null terminator, strlen will read past the end of the buffer"
+              },
+              "artifactChanges": [
+                {
+                  "artifactLocation": {
+                    "uri": "tools/c-index-test/c-index-test.c"
+                  },
+                  "replacements": [
+                    {
+                      "deletedRegion": {
+                        "charOffset": 143053,
+                        "charLength": 12
+                      },
+                      "insertedContent": {
+                        "text": "strlen_s(kind, <size of kind>)"
+                      }
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "description": {
+                "text": "If a string is missing a null terminator, strlen will read past the end of the buffer"
+              },
+              "artifactChanges": [
+                {
+                  "artifactLocation": {
+                    "uri": "tools/c-index-test/c-index-test.c"
+                  },
+                  "replacements": [
+                    {
+                      "deletedRegion": {
+                        "charOffset": 143053,
+                        "charLength": 12
+                      },
+                      "insertedContent": {
+                        "text": "strnlen(kind, <size of kind>)"
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "properties": {
+            "DevSkimSeverity": "BestPractice",
+            "DevSkimConfidence": "High",
+            "tags": [
+              "API.DangerousAPI.ProblematicFunction"
+            ]
+          }
+        },
+        {
+          "ruleId": "glog-0911b150-9a3d-4778-868b-96be22c050c3",
+          "kind": "fail",
+          "level": "note",
+          "message": {
+            "text": "Detected Vulnerability in C Function (memcpy)"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "tools/c-index-test/c-index-test.c"
+                },
+                "region": {
+                  "startLine": 4283,
+                  "startColumn": 2,
+                  "endLine": 4283,
+                  "endColumn": 30,
+                  "charOffset": 140046,
+                  "charLength": 28,
+                  "snippet": {
+                    "text": "memcpy(tmp, database, len+1)",
+                    "rendered": {
+                      "text": "memcpy(tmp, database, len+1)",
+                      "markdown": "`memcpy(tmp, database, len+1)`"
+                    }
+                  },
+                  "sourceLanguage": "c"
+                }
+              }
+            }
+          ],
+          "fixes": [
+            {
+              "description": {
+                "text": "There are a number of conditions in which memcpy can introduce a vulnerability (mismatched buffer sizes, null pointers, etc.). More secure alternitives perform additional validation of the source and destination buffer"
+              },
+              "artifactChanges": [
+                {
+                  "artifactLocation": {
+                    "uri": "tools/c-index-test/c-index-test.c"
+                  },
+                  "replacements": [
+                    {
+                      "deletedRegion": {
+                        "charOffset": 140046,
+                        "charLength": 28
+                      },
+                      "insertedContent": {
+                        "text": "memcpy_s(tmp, <size of tmp>,  database,  len+1)"
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "properties": {
+            "DevSkimSeverity": "BestPractice",
+            "DevSkimConfidence": "High",
+            "tags": [
+              "API.DangerousAPI.ProblematicFunction"
+            ]
+          }
+        },
+        {
+          "ruleId": "glog-990e730c-10f2-4586-8062-2aea4cce7371",
+          "kind": "fail",
+          "level": "note",
+          "message": {
+            "text": "\"Detected Issue with C Function (malloc)\""
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "tools/c-index-test/c-index-test.c"
+                },
+                "region": {
+                  "startLine": 4281,
+                  "startColumn": 17,
+                  "endLine": 4281,
+                  "endColumn": 30,
+                  "charOffset": 140014,
+                  "charLength": 13,
+                  "snippet": {
+                    "text": "malloc(len+1)",
+                    "rendered": {
+                      "text": "malloc(len+1)",
+                      "markdown": "`malloc(len+1)`"
+                    }
+                  },
+                  "sourceLanguage": "c"
+                }
+              }
+            }
+          ],
+          "fixes": [
+            {
+              "description": {
+                "text": "If the value provided to malloc is the result of unsafe integer math, it can result in an exploitable condition. "
+              },
+              "artifactChanges": [
+                {
+                  "artifactLocation": {
+                    "uri": "tools/c-index-test/c-index-test.c"
+                  },
+                  "replacements": [
+                    {
+                      "deletedRegion": {
+                        "charOffset": 140014,
+                        "charLength": 13
+                      },
+                      "insertedContent": {
+                        "text": "calloc(<number of elements>, <size of each element>)"
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "properties": {
+            "DevSkimSeverity": "BestPractice",
+            "DevSkimConfidence": "High",
+            "tags": [
+              "API.DangerousAPI.ProblematicFunction"
+            ]
+          }
+        },
+        {
+          "ruleId": "glog-876126b3-775a-472c-9fa4-9ca5b29f54cf",
+          "kind": "fail",
+          "level": "note",
+          "message": {
+            "text": "Detected Vulnerability in C Function (strlen)"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "tools/c-index-test/c-index-test.c"
+                },
+                "region": {
+                  "startLine": 4280,
+                  "startColumn": 8,
+                  "endLine": 4280,
+                  "endColumn": 24,
+                  "charOffset": 139979,
+                  "charLength": 16,
+                  "snippet": {
+                    "text": "strlen(database)",
+                    "rendered": {
+                      "text": "strlen(database)",
+                      "markdown": "`strlen(database)`"
+                    }
+                  },
+                  "sourceLanguage": "c"
+                }
+              }
+            }
+          ],
+          "fixes": [
+            {
+              "description": {
+                "text": "If a string is missing a null terminator, strlen will read past the end of the buffer"
+              },
+              "artifactChanges": [
+                {
+                  "artifactLocation": {
+                    "uri": "tools/c-index-test/c-index-test.c"
+                  },
+                  "replacements": [
+                    {
+                      "deletedRegion": {
+                        "charOffset": 139979,
+                        "charLength": 16
+                      },
+                      "insertedContent": {
+                        "text": "strlen_s(database, <size of database>)"
+                      }
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "description": {
+                "text": "If a string is missing a null terminator, strlen will read past the end of the buffer"
+              },
+              "artifactChanges": [
+                {
+                  "artifactLocation": {
+                    "uri": "tools/c-index-test/c-index-test.c"
+                  },
+                  "replacements": [
+                    {
+                      "deletedRegion": {
+                        "charOffset": 139979,
+                        "charLength": 16
+                      },
+                      "insertedContent": {
+                        "text": "strnlen(database, <size of database>)"
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "properties": {
+            "DevSkimSeverity": "BestPractice",
+            "DevSkimConfidence": "High",
+            "tags": [
+              "API.DangerousAPI.ProblematicFunction"
+            ]
+          }
+        },
+        {
+          "ruleId": "glog-eb056bac-fed3-4398-9d39-a2ffdc6fe6e1",
+          "kind": "fail",
+          "level": "note",
+          "message": {
+            "text": "Detected Vulnerability in C Function (malloc)"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "tools/c-index-test/c-index-test.c"
+                },
+                "region": {
+                  "startLine": 4206,
+                  "startColumn": 24,
+                  "endLine": 4206,
+                  "endColumn": 60,
+                  "charOffset": 137441,
+                  "charLength": 36,
+                  "snippet": {
+                    "text": "malloc(num_tokens * sizeof(CXCursor)",
+                    "rendered": {
+                      "text": "malloc(num_tokens * sizeof(CXCursor)",
+                      "markdown": "`malloc(num_tokens * sizeof(CXCursor)`"
+                    }
+                  },
+                  "sourceLanguage": "c"
+                }
+              }
+            }
+          ],
+          "fixes": [
+            {
+              "description": {
+                "text": "If the value provided to malloc is the result of unsafe integer math, it can result in an exploitable condition. "
+              },
+              "artifactChanges": [
+                {
+                  "artifactLocation": {
+                    "uri": "tools/c-index-test/c-index-test.c"
+                  },
+                  "replacements": [
+                    {
+                      "deletedRegion": {
+                        "charOffset": 137441,
+                        "charLength": 36
+                      },
+                      "insertedContent": {
+                        "text": "calloc(<number of elements>, <size of each element>)"
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "properties": {
+            "DevSkimSeverity": "BestPractice",
+            "DevSkimConfidence": "High",
+            "tags": [
+              "API.DangerousAPI.ProblematicFunction"
+            ]
+          }
+        },
+        {
+          "ruleId": "glog-27b36bac-bfbb-4121-9212-1774fd02fd5a",
+          "kind": "fail",
+          "level": "note",
+          "message": {
+            "text": "Detected Vulnerability in C Function (strlen)"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "tools/c-index-test/c-index-test.c"
+                },
+                "region": {
+                  "startLine": 4125,
+                  "startColumn": 11,
+                  "endLine": 4125,
+                  "endColumn": 43,
+                  "charOffset": 134957,
+                  "charLength": 32,
+                  "snippet": {
+                    "text": "strlen(\"-test-annotate-tokens=\")",
+                    "rendered": {
+                      "text": "strlen(\"-test-annotate-tokens=\")",
+                      "markdown": "`strlen(\"-test-annotate-tokens=\")`"
+                    }
+                  },
+                  "sourceLanguage": "c"
+                }
+              }
+            }
+          ],
+          "fixes": [
+            {
+              "description": {
+                "text": "If a string is missing a null terminator, strlen will read past the end of the buffer"
+              },
+              "artifactChanges": [
+                {
+                  "artifactLocation": {
+                    "uri": "tools/c-index-test/c-index-test.c"
+                  },
+                  "replacements": [
+                    {
+                      "deletedRegion": {
+                        "charOffset": 134957,
+                        "charLength": 32
+                      },
+                      "insertedContent": {
+                        "text": "strlen_s(\"-test-annotate-tokens=\", <size of \"-test-annotate-tokens=\">)"
+                      }
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "description": {
+                "text": "If a string is missing a null terminator, strlen will read past the end of the buffer"
+              },
+              "artifactChanges": [
+                {
+                  "artifactLocation": {
+                    "uri": "tools/c-index-test/c-index-test.c"
+                  },
+                  "replacements": [
+                    {
+                      "deletedRegion": {
+                        "charOffset": 134957,
+                        "charLength": 32
+                      },
+                      "insertedContent": {
+                        "text": "strnlen(\"-test-annotate-tokens=\", <size of \"-test-annotate-tokens=\">)"
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "properties": {
+            "DevSkimSeverity": "BestPractice",
+            "DevSkimConfidence": "High",
+            "tags": [
+              "API.DangerousAPI.ProblematicFunction"
+            ]
+          }
+        },
+        {
+          "ruleId": "glog-9dd7f2bf-20f7-47ef-8218-e05adabf539e",
+          "kind": "fail",
+          "level": "note",
+          "message": {
+            "text": "Detected Vulnerability in C Function (memcpy)"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "tools/c-index-test/c-index-test.c"
+                },
+                "region": {
+                  "startLine": 4026,
+                  "startColumn": 4,
+                  "endLine": 4026,
+                  "endColumn": 32,
+                  "charOffset": 132245,
+                  "charLength": 28,
+                  "snippet": {
+                    "text": "memcpy(tmp, database, len+1)",
+                    "rendered": {
+                      "text": "memcpy(tmp, database, len+1)",
+                      "markdown": "`memcpy(tmp, database, len+1)`"
+                    }
+                  },
+                  "sourceLanguage": "c"
+                }
+              }
+            }
+          ],
+          "fixes": [
+            {
+              "description": {
+                "text": "There are a number of conditions in which memcpy can introduce a vulnerability (mismatched buffer sizes, null pointers, etc.). More secure alternitives perform additional validation of the source and destination buffer"
+              },
+              "artifactChanges": [
+                {
+                  "artifactLocation": {
+                    "uri": "tools/c-index-test/c-index-test.c"
+                  },
+                  "replacements": [
+                    {
+                      "deletedRegion": {
+                        "charOffset": 132245,
+                        "charLength": 28
+                      },
+                      "insertedContent": {
+                        "text": "memcpy_s(tmp, <size of tmp>,  database,  len+1)"
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "properties": {
+            "DevSkimSeverity": "BestPractice",
+            "DevSkimConfidence": "High",
+            "tags": [
+              "API.DangerousAPI.ProblematicFunction"
+            ]
+          }
+        },
+        {
+          "ruleId": "glog-e02e574c-004d-498a-acb4-302ad9d3dde4",
+          "kind": "fail",
+          "level": "note",
+          "message": {
+            "text": "\"Detected Issue with C Function (malloc)\""
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "tools/c-index-test/c-index-test.c"
+                },
+                "region": {
+                  "startLine": 4024,
+                  "startColumn": 19,
+                  "endLine": 4024,
+                  "endColumn": 32,
+                  "charOffset": 132209,
+                  "charLength": 13,
+                  "snippet": {
+                    "text": "malloc(len+1)",
+                    "rendered": {
+                      "text": "malloc(len+1)",
+                      "markdown": "`malloc(len+1)`"
+                    }
+                  },
+                  "sourceLanguage": "c"
+                }
+              }
+            }
+          ],
+          "fixes": [
+            {
+              "description": {
+                "text": "If the value provided to malloc is the result of unsafe integer math, it can result in an exploitable condition. "
+              },
+              "artifactChanges": [
+                {
+                  "artifactLocation": {
+                    "uri": "tools/c-index-test/c-index-test.c"
+                  },
+                  "replacements": [
+                    {
+                      "deletedRegion": {
+                        "charOffset": 132209,
+                        "charLength": 13
+                      },
+                      "insertedContent": {
+                        "text": "calloc(<number of elements>, <size of each element>)"
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "properties": {
+            "DevSkimSeverity": "BestPractice",
+            "DevSkimConfidence": "High",
+            "tags": [
+              "API.DangerousAPI.ProblematicFunction"
+            ]
+          }
+        },
+        {
+          "ruleId": "glog-5d5ff536-4368-4559-8e28-fbce195d31ca",
+          "kind": "fail",
+          "level": "note",
+          "message": {
+            "text": "Detected Vulnerability in C Function (strlen)"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "tools/c-index-test/c-index-test.c"
+                },
+                "region": {
+                  "startLine": 4023,
+                  "startColumn": 10,
+                  "endLine": 4023,
+                  "endColumn": 26,
+                  "charOffset": 132172,
+                  "charLength": 16,
+                  "snippet": {
+                    "text": "strlen(database)",
+                    "rendered": {
+                      "text": "strlen(database)",
+                      "markdown": "`strlen(database)`"
+                    }
+                  },
+                  "sourceLanguage": "c"
+                }
+              }
+            }
+          ],
+          "fixes": [
+            {
+              "description": {
+                "text": "If a string is missing a null terminator, strlen will read past the end of the buffer"
+              },
+              "artifactChanges": [
+                {
+                  "artifactLocation": {
+                    "uri": "tools/c-index-test/c-index-test.c"
+                  },
+                  "replacements": [
+                    {
+                      "deletedRegion": {
+                        "charOffset": 132172,
+                        "charLength": 16
+                      },
+                      "insertedContent": {
+                        "text": "strlen_s(database, <size of database>)"
+                      }
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "description": {
+                "text": "If a string is missing a null terminator, strlen will read past the end of the buffer"
+              },
+              "artifactChanges": [
+                {
+                  "artifactLocation": {
+                    "uri": "tools/c-index-test/c-index-test.c"
+                  },
+                  "replacements": [
+                    {
+                      "deletedRegion": {
+                        "charOffset": 132172,
+                        "charLength": 16
+                      },
+                      "insertedContent": {
+                        "text": "strnlen(database, <size of database>)"
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "properties": {
+            "DevSkimSeverity": "BestPractice",
+            "DevSkimConfidence": "High",
+            "tags": [
+              "API.DangerousAPI.ProblematicFunction"
+            ]
+          }
+        },
+        {
+          "ruleId": "glog-c21e9880-f871-4e3e-a997-46b7cdba7285",
+          "kind": "fail",
+          "level": "note",
+          "message": {
+            "text": "Detected Vulnerability in C Function (strlen)"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "tools/c-index-test/c-index-test.c"
+                },
+                "region": {
+                  "startLine": 3990,
+                  "startColumn": 31,
+                  "endLine": 3990,
+                  "endColumn": 55,
+                  "charOffset": 131390,
+                  "charLength": 24,
+                  "snippet": {
+                    "text": "strlen(\"-check-prefix=\")",
+                    "rendered": {
+                      "text": "strlen(\"-check-prefix=\")",
+                      "markdown": "`strlen(\"-check-prefix=\")`"
+                    }
+                  },
+                  "sourceLanguage": "c"
+                }
+              }
+            }
+          ],
+          "fixes": [
+            {
+              "description": {
+                "text": "If a string is missing a null terminator, strlen will read past the end of the buffer"
+              },
+              "artifactChanges": [
+                {
+                  "artifactLocation": {
+                    "uri": "tools/c-index-test/c-index-test.c"
+                  },
+                  "replacements": [
+                    {
+                      "deletedRegion": {
+                        "charOffset": 131390,
+                        "charLength": 24
+                      },
+                      "insertedContent": {
+                        "text": "strlen_s(\"-check-prefix=\", <size of \"-check-prefix=\">)"
+                      }
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "description": {
+                "text": "If a string is missing a null terminator, strlen will read past the end of the buffer"
+              },
+              "artifactChanges": [
+                {
+                  "artifactLocation": {
+                    "uri": "tools/c-index-test/c-index-test.c"
+                  },
+                  "replacements": [
+                    {
+                      "deletedRegion": {
+                        "charOffset": 131390,
+                        "charLength": 24
+                      },
+                      "insertedContent": {
+                        "text": "strnlen(\"-check-prefix=\", <size of \"-check-prefix=\">)"
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "properties": {
+            "DevSkimSeverity": "BestPractice",
+            "DevSkimConfidence": "High",
+            "tags": [
+              "API.DangerousAPI.ProblematicFunction"
+            ]
+          }
+        },
+        {
+          "ruleId": "glog-e006c585-3477-44c7-8e7a-b33f2e9fa92d",
+          "kind": "fail",
+          "level": "note",
+          "message": {
+            "text": "Detected Vulnerability in C Function (strlen)"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "tools/c-index-test/c-index-test.c"
+                },
+                "region": {
+                  "startLine": 3960,
+                  "startColumn": 31,
+                  "endLine": 3960,
+                  "endColumn": 55,
+                  "charOffset": 130612,
+                  "charLength": 24,
+                  "snippet": {
+                    "text": "strlen(\"-check-prefix=\")",
+                    "rendered": {
+                      "text": "strlen(\"-check-prefix=\")",
+                      "markdown": "`strlen(\"-check-prefix=\")`"
+                    }
+                  },
+                  "sourceLanguage": "c"
+                }
+              }
+            }
+          ],
+          "fixes": [
+            {
+              "description": {
+                "text": "If a string is missing a null terminator, strlen will read past the end of the buffer"
+              },
+              "artifactChanges": [
+                {
+                  "artifactLocation": {
+                    "uri": "tools/c-index-test/c-index-test.c"
+                  },
+                  "replacements": [
+                    {
+                      "deletedRegion": {
+                        "charOffset": 130612,
+                        "charLength": 24
+                      },
+                      "insertedContent": {
+                        "text": "strlen_s(\"-check-prefix=\", <size of \"-check-prefix=\">)"
+                      }
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "description": {
+                "text": "If a string is missing a null terminator, strlen will read past the end of the buffer"
+              },
+              "artifactChanges": [
+                {
+                  "artifactLocation": {
+                    "uri": "tools/c-index-test/c-index-test.c"
+                  },
+                  "replacements": [
+                    {
+                      "deletedRegion": {
+                        "charOffset": 130612,
+                        "charLength": 24
+                      },
+                      "insertedContent": {
+                        "text": "strnlen(\"-check-prefix=\", <size of \"-check-prefix=\">)"
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "properties": {
+            "DevSkimSeverity": "BestPractice",
+            "DevSkimConfidence": "High",
+            "tags": [
+              "API.DangerousAPI.ProblematicFunction"
+            ]
+          }
+        },
+        {
+          "ruleId": "glog-c38395e9-e760-4a7d-91a5-27884f67091a",
+          "kind": "fail",
+          "level": "note",
+          "message": {
+            "text": "Detected Vulnerability in C Function (strlen)"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "tools/c-index-test/c-index-test.c"
+                },
+                "region": {
+                  "startLine": 3916,
+                  "startColumn": 31,
+                  "endLine": 3916,
+                  "endColumn": 55,
+                  "charOffset": 129478,
+                  "charLength": 24,
+                  "snippet": {
+                    "text": "strlen(\"-check-prefix=\")",
+                    "rendered": {
+                      "text": "strlen(\"-check-prefix=\")",
+                      "markdown": "`strlen(\"-check-prefix=\")`"
+                    }
+                  },
+                  "sourceLanguage": "c"
+                }
+              }
+            }
+          ],
+          "fixes": [
+            {
+              "description": {
+                "text": "If a string is missing a null terminator, strlen will read past the end of the buffer"
+              },
+              "artifactChanges": [
+                {
+                  "artifactLocation": {
+                    "uri": "tools/c-index-test/c-index-test.c"
+                  },
+                  "replacements": [
+                    {
+                      "deletedRegion": {
+                        "charOffset": 129478,
+                        "charLength": 24
+                      },
+                      "insertedContent": {
+                        "text": "strlen_s(\"-check-prefix=\", <size of \"-check-prefix=\">)"
+                      }
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "description": {
+                "text": "If a string is missing a null terminator, strlen will read past the end of the buffer"
+              },
+              "artifactChanges": [
+                {
+                  "artifactLocation": {
+                    "uri": "tools/c-index-test/c-index-test.c"
+                  },
+                  "replacements": [
+                    {
+                      "deletedRegion": {
+                        "charOffset": 129478,
+                        "charLength": 24
+                      },
+                      "insertedContent": {
+                        "text": "strnlen(\"-check-prefix=\", <size of \"-check-prefix=\">)"
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "properties": {
+            "DevSkimSeverity": "BestPractice",
+            "DevSkimConfidence": "High",
+            "tags": [
+              "API.DangerousAPI.ProblematicFunction"
             ]
           }
         }
